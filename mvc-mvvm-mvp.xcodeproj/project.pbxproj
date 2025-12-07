@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		85749E8B2EE58B92001AF00E /* MVC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85749E872EE58B6A001AF00E /* MVC.framework */; };
+		85749E8C2EE58B92001AF00E /* MVC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85749E872EE58B6A001AF00E /* MVC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		85749CC72EE5878A001AF00E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +26,34 @@
 			remoteGlobalIDString = 85749CAF2EE58788001AF00E;
 			remoteInfo = "mvc-mvvm-mvp";
 		};
+		85749E862EE58B6A001AF00E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 85749E612EE58A87001AF00E;
+			remoteInfo = MVC;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		85749E8D2EE58B92001AF00E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				85749E8C2EE58B92001AF00E /* MVC.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		85749CB02EE58788001AF00E /* mvc-mvvm-mvp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mvc-mvvm-mvp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CC62EE5878A001AF00E /* mvc-mvvm-mvpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CD02EE5878A001AF00E /* mvc-mvvm-mvpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MVC.xcodeproj; path = MVC/MVC.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85749E8B2EE58B92001AF00E /* MVC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,9 +116,11 @@
 		85749CA72EE58788001AF00E = {
 			isa = PBXGroup;
 			children = (
+				85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */,
 				85749CB22EE58788001AF00E /* mvc-mvvm-mvp */,
 				85749CC92EE5878A001AF00E /* mvc-mvvm-mvpTests */,
 				85749CD32EE5878A001AF00E /* mvc-mvvm-mvpUITests */,
+				85749E8A2EE58B92001AF00E /* Frameworks */,
 				85749CB12EE58788001AF00E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -105,6 +135,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		85749E7C2EE58B6A001AF00E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				85749E872EE58B6A001AF00E /* MVC.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		85749E8A2EE58B92001AF00E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -115,6 +160,7 @@
 				85749CAC2EE58788001AF00E /* Sources */,
 				85749CAD2EE58788001AF00E /* Frameworks */,
 				85749CAE2EE58788001AF00E /* Resources */,
+				85749E8D2EE58B92001AF00E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -211,6 +257,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 85749CB12EE58788001AF00E /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 85749E7C2EE58B6A001AF00E /* Products */;
+					ProjectRef = 85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				85749CAF2EE58788001AF00E /* mvc-mvvm-mvp */,
@@ -219,6 +271,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		85749E872EE58B6A001AF00E /* MVC.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MVC.framework;
+			remoteRef = 85749E862EE58B6A001AF00E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		85749CAE2EE58788001AF00E /* Resources */ = {

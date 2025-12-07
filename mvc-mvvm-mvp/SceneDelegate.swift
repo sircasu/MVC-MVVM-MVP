@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MVC
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -18,8 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = ViewController()
-        vc.view.backgroundColor = .systemPink
+        let vc = TestVC()
         
         
         window?.rootViewController = vc
