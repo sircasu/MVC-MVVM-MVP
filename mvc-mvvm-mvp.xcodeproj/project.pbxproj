@@ -54,6 +54,7 @@
 		85749CC62EE5878A001AF00E /* mvc-mvvm-mvpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CD02EE5878A001AF00E /* mvc-mvvm-mvpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MVC.xcodeproj; path = MVC/MVC.xcodeproj; sourceTree = "<group>"; };
+		85749E902EE58CE7001AF00E /* MVCTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = MVCTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -116,6 +117,7 @@
 		85749CA72EE58788001AF00E = {
 			isa = PBXGroup;
 			children = (
+				85749E902EE58CE7001AF00E /* MVCTests.xctestplan */,
 				85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */,
 				85749CB22EE58788001AF00E /* mvc-mvvm-mvp */,
 				85749CC92EE5878A001AF00E /* mvc-mvvm-mvpTests */,
