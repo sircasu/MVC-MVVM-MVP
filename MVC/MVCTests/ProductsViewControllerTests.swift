@@ -8,11 +8,26 @@
 import XCTest
 import UIKit
 
+struct ProductItem {
+    let id: Int
+    let title: String
+    let price: Double
+    let description: String
+    let category: String
+    let image: URL
+}
+
+protocol ProductsLoader {
+    typealias Result = Swift.Result<[ProductItem], Error>
+    func load(completion: @escaping (Result) -> Void)
+}
+
+
 final class ProductsViewController: UIViewController {
     
-    private var loader: ProductsViewControllerTests.LoaderSpy?
+    private var loader: ProductsLoader?
     
-    convenience init(loader: ProductsViewControllerTests.LoaderSpy) {
+    convenience init(loader: ProductsLoader) {
         self.init()
         self.loader = loader
     }
@@ -20,17 +35,17 @@ final class ProductsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loader?.load()
+        loader?.load() { _ in }
     }
 }
+
 
 
 class ProductsViewControllerTests: XCTestCase {
     
     func test_init_doesNotLoadProducts() {
         
-        let loader = LoaderSpy()
-        let _ = ProductsViewController(loader: loader)
+        let (_, loader) = makeSUT()
         
         XCTAssertEqual(loader.loadCallCount, 0)
     }
@@ -38,8 +53,7 @@ class ProductsViewControllerTests: XCTestCase {
     
     func test_viewDidLoad_loadProducts() {
         
-        let loader = LoaderSpy()
-        let sut = ProductsViewController(loader: loader)
+        let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
         
@@ -49,11 +63,23 @@ class ProductsViewControllerTests: XCTestCase {
     
     // MARK: - Helpers
     
-    class LoaderSpy {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
+        
+        let loader = LoaderSpy()
+        let sut = ProductsViewController(loader: loader)
+        
+        return (sut, loader)
+    }
+    
+    class LoaderSpy: ProductsLoader {
+        
+        typealias Result = Swift.Result<[ProductItem], Error>
+        
         
         var loadCallCount: Int = 0
         
-        func load() {
+        
+        func load(completion: @escaping (Result) -> Void) {
             loadCallCount += 1
         }
     }
