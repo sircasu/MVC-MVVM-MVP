@@ -67,6 +67,8 @@ class ProductsViewControllerTests: XCTestCase {
         
         let loader = LoaderSpy()
         let sut = ProductsViewController(loader: loader)
+        trackForMemoryLeak(sut, file: file, line: line)
+        trackForMemoryLeak(loader, file: file, line: line)
         
         return (sut, loader)
     }
@@ -81,6 +83,17 @@ class ProductsViewControllerTests: XCTestCase {
         
         func load(completion: @escaping (Result) -> Void) {
             loadCallCount += 1
+        }
+    }
+}
+
+
+
+extension XCTestCase {
+    
+    func trackForMemoryLeak(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "Instance should have been deallocated, Potential memory leak.", file: file, line: line)
         }
     }
 }
