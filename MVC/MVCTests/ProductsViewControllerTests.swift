@@ -23,7 +23,7 @@ protocol ProductsLoader {
 }
 
 
-final class ProductsViewController: UIViewController {
+final class ProductsViewController: UITableViewController {
     
     private var loader: ProductsLoader?
     
@@ -35,7 +35,21 @@ final class ProductsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loader?.load() { _ in }
+        refreshControl = UIRefreshControl()
+        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+    }
+    
+    
+    override func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        
+        refreshControl?.beginRefreshing()
+        load()
+    }
+    
+    
+    @objc private func load() {
+        loader?.load { _ in }
     }
 }
 
@@ -54,12 +68,39 @@ class ProductsViewControllerTests: XCTestCase {
     func test_viewDidLoad_loadProducts() {
         
         let (sut, loader) = makeSUT()
-        
+        sut.beginAppearanceTransition(true, animated: false)
+        sut.endAppearanceTransition()
         sut.loadViewIfNeeded()
         
         XCTAssertEqual(loader.loadCallCount, 1)
     }
     
+    
+    func test_pullToRefresh_loadProducts() {
+        
+        let (sut, loader) = makeSUT()
+        sut.beginAppearanceTransition(true, animated: false)
+        sut.endAppearanceTransition()
+        sut.loadViewIfNeeded()
+        
+        sut.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(loader.loadCallCount, 2)
+    
+        sut.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(loader.loadCallCount, 3)
+    }
+    
+    
+    func test_viewIsAppearing_showsLoadingIndicator() {
+        
+        let (sut, _) = makeSUT()
+        sut.replaceRefreshControlWithFakeForiOS17Support()
+        
+        sut.beginAppearanceTransition(true, animated: false)
+        sut.endAppearanceTransition()
+        
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
+    }
     
     // MARK: - Helpers
     
@@ -84,6 +125,52 @@ class ProductsViewControllerTests: XCTestCase {
         func load(completion: @escaping (Result) -> Void) {
             loadCallCount += 1
         }
+    }
+
+}
+
+
+private extension ProductsViewController {
+    
+    func replaceRefreshControlWithFakeForiOS17Support() {
+        let fake = FakeRefreshControl()
+        
+        refreshControl?.allTargets.forEach { target in
+            refreshControl?.actions(forTarget: target, forControlEvent: .valueChanged)?.forEach { action in
+                fake.addTarget(target, action: Selector(action), for: .valueChanged)
+            }
+        }
+        
+        refreshControl = fake
+    }
+}
+
+
+private extension UIRefreshControl {
+    func simulatePullToRefresh() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
+                (target as NSObject).perform(Selector($0))
+            }
+        }
+    }
+}
+
+
+private class FakeRefreshControl: UIRefreshControl {
+    
+    private var _isRefreshing = false
+    
+    
+    override var isRefreshing: Bool { _isRefreshing }
+    
+    
+    override func beginRefreshing() {
+        _isRefreshing = true
+    }
+    
+    override func endRefreshing() {
+        _isRefreshing = false
     }
 }
 
