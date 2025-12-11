@@ -103,7 +103,7 @@ class ProductsViewControllerTests: XCTestCase {
         sut.beginAppearanceTransition(true, animated: false)
         sut.endAppearanceTransition()
         
-        XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     
@@ -118,7 +118,7 @@ class ProductsViewControllerTests: XCTestCase {
         
         loader.completesProductsLoading()
         
-        XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
     
@@ -129,7 +129,7 @@ class ProductsViewControllerTests: XCTestCase {
         sut.replaceRefreshControlWithFakeForiOS17Support()
 
         sut.simulateUserInitiatedReload()
-        XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     
@@ -141,7 +141,7 @@ class ProductsViewControllerTests: XCTestCase {
         sut.simulateUserInitiatedReload()
         
         loader.completesProductsLoading(at: 0)
-        XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
     // MARK: - Helpers
@@ -192,10 +192,12 @@ private extension ProductsViewController {
     }
     
     
-    
     func simulateUserInitiatedReload() {
         refreshControl?.simulatePullToRefresh()
     }
+    
+    
+    var isShowingLoadingIndicator: Bool { refreshControl?.isRefreshing == true }
 }
 
 
