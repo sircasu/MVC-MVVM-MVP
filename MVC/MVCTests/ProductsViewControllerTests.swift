@@ -43,12 +43,12 @@ final class ProductsViewController: UITableViewController {
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         
-        refreshControl?.beginRefreshing()
         load()
     }
     
     
     @objc private func load() {
+        refreshControl?.beginRefreshing()
         loader?.load { [weak self] _ in
             self?.refreshControl?.endRefreshing()
         }
@@ -118,6 +118,30 @@ class ProductsViewControllerTests: XCTestCase {
         
         loader.completesProductsLoading()
         
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
+    }
+    
+    
+    func test_pullToRefresh_showsLoadingIndicator() {
+        
+        let (sut, _) = makeSUT()
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFakeForiOS17Support()
+
+        sut.refreshControl?.simulatePullToRefresh()
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
+    }
+    
+    
+    func test_pullToRefresh_hidesLoadingIndicatorOnLoaderCompletion() {
+        
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFakeForiOS17Support()
+        
+        sut.refreshControl?.simulatePullToRefresh()
+        
+        loader.completesProductsLoading(at: 0)
         XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
     
