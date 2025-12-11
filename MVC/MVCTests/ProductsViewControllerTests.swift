@@ -49,7 +49,9 @@ final class ProductsViewController: UITableViewController {
     
     
     @objc private func load() {
-        loader?.load { _ in }
+        loader?.load { [weak self] _ in
+            self?.refreshControl?.endRefreshing()
+        }
     }
 }
 
@@ -94,12 +96,29 @@ class ProductsViewControllerTests: XCTestCase {
     func test_viewIsAppearing_showsLoadingIndicator() {
         
         let (sut, _) = makeSUT()
+        sut.loadViewIfNeeded()
         sut.replaceRefreshControlWithFakeForiOS17Support()
+        
         
         sut.beginAppearanceTransition(true, animated: false)
         sut.endAppearanceTransition()
         
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
+    }
+    
+    
+    func test_viewIsAppearing_hidesLoadingIndicatorOnLoaderCompletion() {
+        
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFakeForiOS17Support()
+        
+        sut.beginAppearanceTransition(true, animated: false)
+        sut.endAppearanceTransition()
+        
+        loader.completesProductsLoading()
+        
+        XCTAssertEqual(sut.refreshControl?.isRefreshing, false)
     }
     
     // MARK: - Helpers
@@ -118,12 +137,17 @@ class ProductsViewControllerTests: XCTestCase {
         
         typealias Result = Swift.Result<[ProductItem], Error>
         
-        
-        var loadCallCount: Int = 0
+        private var completions = [(Result) -> Void]()
+        var loadCallCount: Int { completions.count }
         
         
         func load(completion: @escaping (Result) -> Void) {
-            loadCallCount += 1
+            completions.append(completion)
+        }
+        
+        
+        func completesProductsLoading(at index: Int = 0) {
+            completions[index](Result.success([]))
         }
     }
 
