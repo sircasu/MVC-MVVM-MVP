@@ -59,90 +59,53 @@ final class ProductsViewController: UITableViewController {
 
 class ProductsViewControllerTests: XCTestCase {
     
-    func test_init_doesNotLoadProducts() {
-        
-        let (_, loader) = makeSUT()
-        
-        XCTAssertEqual(loader.loadCallCount, 0)
-    }
-    
-    
-    func test_viewDidLoad_loadProducts() {
+    func test_loadProductAction_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
-        sut.loadViewIfNeeded()
+        sut.loadViewIfNeeded() // viewDidLoad
         
-        XCTAssertEqual(loader.loadCallCount, 1)
-    }
-    
-    
-    func test_pullToRefresh_loadProducts() {
+        XCTAssertEqual(loader.loadCallCount, 0, "Expected no loading requests before the view appears")
+
+        sut.beginAppearanceTransition(true, animated: false) // viewWillAppear
+        sut.endAppearanceTransition() // viewIsAppearing+viewDidAppear
+
         
-        let (sut, loader) = makeSUT()
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
-        sut.loadViewIfNeeded()
-        
-        sut.simulateUserInitiatedReload()
-        XCTAssertEqual(loader.loadCallCount, 2)
-    
-        sut.simulateUserInitiatedReload()
-        XCTAssertEqual(loader.loadCallCount, 3)
-    }
-    
-    
-    func test_viewIsAppearing_showsLoadingIndicator() {
-        
-        let (sut, _) = makeSUT()
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFakeForiOS17Support()
-        
-        
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
-        
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
-    }
-    
-    
-    func test_viewIsAppearing_hidesLoadingIndicatorOnLoaderCompletion() {
-        
-        let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFakeForiOS17Support()
-        
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
-        
-        loader.completesProductsLoading()
-        
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
-    }
-    
-    
-    func test_userInitiateReload_showsLoadingIndicator() {
-        
-        let (sut, _) = makeSUT()
-        sut.loadViewIfNeeded()
-        sut.replaceRefreshControlWithFakeForiOS17Support()
+        XCTAssertEqual(loader.loadCallCount, 1, "Expected a loading request once view is appeared")
 
         sut.simulateUserInitiatedReload()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        XCTAssertEqual(loader.loadCallCount, 2, "Expected another loading request once user initiates reload")
+    
+        sut.simulateUserInitiatedReload()
+        XCTAssertEqual(loader.loadCallCount, 3, "Expected a third loading request once user initiates reload")
     }
     
     
-    func test_userInitiateReload_hidesLoadingIndicatorOnLoaderCompletion() {
+    func test_loadingProductsIndicator_isVisibleWhileLoadingProducts() {
         
         let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded()
+        sut.replaceRefreshControlWithFakeForiOS17Support()
         
-        sut.simulateUserInitiatedReload()
+        sut.loadViewIfNeeded()
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator until view is appeared")
+        
+        
+        sut.beginAppearanceTransition(true, animated: false)
+        sut.endAppearanceTransition()
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is appeared")
+
         
         loader.completesProductsLoading(at: 0)
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once loading is completed")
+
+
+        sut.simulateUserInitiatedReload()
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once user initiates reload")
+        
+        
+        loader.completesProductsLoading(at: 1)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator once reload is completed")
     }
+    
     
     // MARK: - Helpers
     
