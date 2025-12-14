@@ -62,14 +62,10 @@ class ProductsViewControllerTests: XCTestCase {
     func test_loadProductAction_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded() // viewDidLoad
         
         XCTAssertEqual(loader.loadCallCount, 0, "Expected no loading requests before the view appears")
-
-        sut.beginAppearanceTransition(true, animated: false) // viewWillAppear
-        sut.endAppearanceTransition() // viewIsAppearing+viewDidAppear
-
         
+        sut.simulateAppearance()
         XCTAssertEqual(loader.loadCallCount, 1, "Expected a loading request once view is appeared")
 
         sut.simulateUserInitiatedReload()
@@ -89,8 +85,7 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator until view is appeared")
         
         
-        sut.beginAppearanceTransition(true, animated: false)
-        sut.endAppearanceTransition()
+        sut.simulateAppearance()
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is appeared")
 
         
@@ -141,6 +136,17 @@ class ProductsViewControllerTests: XCTestCase {
 
 
 private extension ProductsViewController {
+    
+    func simulateAppearance() {
+        if !isViewLoaded {
+            loadViewIfNeeded()
+            replaceRefreshControlWithFakeForiOS17Support()
+        }
+        
+        beginAppearanceTransition(true, animated: false) // viewWillAppear
+        endAppearanceTransition() // viewIsAppearing+viewDidAppear
+    }
+    
     
     func replaceRefreshControlWithFakeForiOS17Support() {
         let fake = FakeRefreshControl()
