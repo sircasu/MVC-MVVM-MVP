@@ -27,6 +27,9 @@ final class ProductsViewController: UITableViewController {
     
     private var loader: ProductsLoader?
     
+    private var onViewIsAppearing: ((ProductsViewController) -> Void)?
+    
+    
     convenience init(loader: ProductsLoader) {
         self.init()
         self.loader = loader
@@ -37,13 +40,18 @@ final class ProductsViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+        
+        onViewIsAppearing = { [weak self] vc in
+            vc.onViewIsAppearing = nil
+            self?.load()
+        }
     }
     
     
     override func viewIsAppearing(_ animated: Bool) {
         super.viewIsAppearing(animated)
         
-        load()
+        onViewIsAppearing?(self)
     }
     
     
@@ -59,7 +67,7 @@ final class ProductsViewController: UITableViewController {
 
 class ProductsViewControllerTests: XCTestCase {
     
-    func test_loadProductAction_requestProductsFromLoader() {
+    func test_loadProductsAction_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
         
@@ -76,16 +84,23 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_loadProductsAction_runsAutomaticallyOnlyOnFirstAppearance() {
+        let (sut, loader) = makeSUT()
+        XCTAssertEqual(loader.loadCallCount, 0, "Expected no loading requests before view appears")
+
+        sut.simulateAppearance()
+        XCTAssertEqual(loader.loadCallCount, 1, "Expected a loading request once view appears")
+
+        sut.simulateAppearance()
+        XCTAssertEqual(loader.loadCallCount , 1, "Expected no loading request the second time view appears")
+    }
+    
+    
     func test_loadingProductsIndicator_isVisibleWhileLoadingProducts() {
         
         let (sut, loader) = makeSUT()
-        sut.replaceRefreshControlWithFakeForiOS17Support()
-        
-        sut.loadViewIfNeeded()
-        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loading indicator until view is appeared")
-        
-        
         sut.simulateAppearance()
+        
         XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loading indicator once view is appeared")
 
         
