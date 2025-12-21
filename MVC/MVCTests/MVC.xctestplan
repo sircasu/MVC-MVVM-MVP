@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "AA365A5A-AE4B-47C1-90FB-B5850BCC58FA",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MVC.xcodeproj",
+        "identifier" : "85749E692EE58A87001AF00E",
+        "name" : "MVCTests"
+      }
+    }
+  ],
+  "version" : 1
+}

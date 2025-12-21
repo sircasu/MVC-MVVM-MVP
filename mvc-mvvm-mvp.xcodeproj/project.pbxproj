@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		85749E8B2EE58B92001AF00E /* MVC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85749E872EE58B6A001AF00E /* MVC.framework */; };
-		85749E8C2EE58B92001AF00E /* MVC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 85749E872EE58B6A001AF00E /* MVC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		853A28792EF84478002F1F63 /* MVC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 853A28782EF84478002F1F63 /* MVC.framework */; };
+		853A287A2EF84478002F1F63 /* MVC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 853A28782EF84478002F1F63 /* MVC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,13 +26,6 @@
 			remoteGlobalIDString = 85749CAF2EE58788001AF00E;
 			remoteInfo = "mvc-mvvm-mvp";
 		};
-		85749E862EE58B6A001AF00E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 85749E612EE58A87001AF00E;
-			remoteInfo = MVC;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,7 +35,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				85749E8C2EE58B92001AF00E /* MVC.framework in Embed Frameworks */,
+				853A287A2EF84478002F1F63 /* MVC.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -50,11 +43,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		853A28782EF84478002F1F63 /* MVC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MVC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CB02EE58788001AF00E /* mvc-mvvm-mvp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mvc-mvvm-mvp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CC62EE5878A001AF00E /* mvc-mvvm-mvpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CD02EE5878A001AF00E /* mvc-mvvm-mvpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MVC.xcodeproj; path = MVC/MVC.xcodeproj; sourceTree = "<group>"; };
-		85749E902EE58CE7001AF00E /* MVCTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = file; path = MVCTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,7 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				85749E8B2EE58B92001AF00E /* MVC.framework in Frameworks */,
+				853A28792EF84478002F1F63 /* MVC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,8 +109,6 @@
 		85749CA72EE58788001AF00E = {
 			isa = PBXGroup;
 			children = (
-				85749E902EE58CE7001AF00E /* MVCTests.xctestplan */,
-				85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */,
 				85749CB22EE58788001AF00E /* mvc-mvvm-mvp */,
 				85749CC92EE5878A001AF00E /* mvc-mvvm-mvpTests */,
 				85749CD32EE5878A001AF00E /* mvc-mvvm-mvpUITests */,
@@ -137,17 +127,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		85749E7C2EE58B6A001AF00E /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				85749E872EE58B6A001AF00E /* MVC.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		85749E8A2EE58B92001AF00E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				853A28782EF84478002F1F63 /* MVC.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -232,7 +215,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2610;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					85749CAF2EE58788001AF00E = {
 						CreatedOnToolsVersion = 26.1.1;
@@ -259,12 +242,6 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 85749CB12EE58788001AF00E /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 85749E7C2EE58B6A001AF00E /* Products */;
-					ProjectRef = 85749E7B2EE58B6A001AF00E /* MVC.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				85749CAF2EE58788001AF00E /* mvc-mvvm-mvp */,
@@ -273,16 +250,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		85749E872EE58B6A001AF00E /* MVC.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MVC.framework;
-			remoteRef = 85749E862EE58B6A001AF00E /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		85749CAE2EE58788001AF00E /* Resources */ = {
@@ -467,6 +434,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -524,6 +492,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};

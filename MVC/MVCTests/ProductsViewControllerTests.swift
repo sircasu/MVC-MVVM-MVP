@@ -7,20 +7,7 @@
 
 import XCTest
 import UIKit
-
-struct ProductItem {
-    let id: Int
-    let title: String
-    let price: Double
-    let description: String
-    let category: String
-    let image: URL
-}
-
-protocol ProductsLoader {
-    typealias Result = Swift.Result<[ProductItem], Error>
-    func load(completion: @escaping (Result) -> Void)
-}
+import Core
 
 
 final class ProductsViewController: UITableViewController {
