@@ -83,6 +83,27 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_loadProductCompletion_doesNotAlterCurrentRenderingStateOnError() {
+        
+        let product0 = makeProduct()
+        let product1 = makeProduct(title: "a product 2", price: 12.0, description: "a description 2")
+        let (sut, loader) = makeSUT()
+
+        
+        sut.simulateAppearance()
+        assertThat(sut, isRendering: [])
+        
+        
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+        assertThat(sut, isRendering: [product0, product1])
+        
+        
+        sut.simulateUserInitiatedReload()
+        loader.completesProductsLoadingWithError(at: 1)
+        assertThat(sut, isRendering: [product0, product1])
+    }
+    
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -147,6 +168,12 @@ class ProductsViewControllerTests: XCTestCase {
         
         func completesProductsLoading(with products: [ProductItem] = [],  at index: Int = 0) {
             completions[index](Result.success(products))
+        }
+        
+        
+        func completesProductsLoadingWithError(at index:Int = 0) {
+            let error = NSError(domain: "test", code: 0)
+            completions[index](.failure(error))
         }
     }
 
