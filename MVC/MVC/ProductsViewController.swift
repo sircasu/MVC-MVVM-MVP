@@ -15,6 +15,8 @@ public final class ProductsViewController: UITableViewController {
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
     
+    public var tableModel: [ProductItem] = [ProductItem]()
+    
     public convenience init(loader: ProductsLoader) {
         self.init()
         self.loader = loader
@@ -42,9 +44,31 @@ public final class ProductsViewController: UITableViewController {
     
     @objc private func load() {
         refreshControl?.beginRefreshing()
-        loader?.load { [weak self] _ in
+        loader?.load { [weak self] result in
+            switch result {
+            case let .success(products):
+                self?.tableModel = products
+                self?.tableView.reloadData()
+            default: break
+            }
             self?.refreshControl?.endRefreshing()
         }
+    }
+    
+    
+
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        tableModel.count
+    }
+    
+    
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let row = tableModel[indexPath.row]
+        let cell = ProductCell()
+        cell.title.text                 = row.title
+        cell.productDescription.text    = row.description
+        cell.price.text                 = row.price.toString
+        return cell
     }
 }
 

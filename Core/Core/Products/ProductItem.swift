@@ -8,10 +8,19 @@
 import Foundation
 
 public struct ProductItem {
-    let id: Int
-    let title: String
-    let price: Double
-    let description: String
-    let category: String
-    let image: URL
+    public let id: Int
+    public let title: String
+    public let price: Double
+    public let description: String
+    public let category: String
+    public let image: URL
+    
+    public init(id: Int, title: String, price: Double, description: String, category: String, image: URL) {
+        self.id = id
+        self.title = title
+        self.price = price
+        self.description = description
+        self.category = category
+        self.image = image
+    }
 }

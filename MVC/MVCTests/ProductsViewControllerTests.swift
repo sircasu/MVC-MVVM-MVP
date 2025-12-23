@@ -61,6 +61,28 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_loadProductsCompletion_rendersSuccessfullyLoadedProducts() {
+        let product0 = makeProduct()
+        let product1 = makeProduct(title: "a product 2", price: 12.0, description: "a description 2")
+        let product2 = makeProduct(title: "a product 3", price: 4.88, description: "a description 3")
+        let (sut, loader) = makeSUT()
+        
+        
+        sut.simulateAppearance()
+        assertThat(sut, isRendering: [])
+
+        
+        loader.completesProductsLoading(with: [product0], at: 0)
+        assertThat(sut, isRendering: [product0])
+
+        
+        sut.simulateUserInitiatedReload()
+        loader.completesProductsLoading(with: [product0, product1, product2], at: 1)
+        assertThat(sut, isRendering: [product0, product1, product2])
+
+    }
+    
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -72,6 +94,43 @@ class ProductsViewControllerTests: XCTestCase {
         
         return (sut, loader)
     }
+    
+    private func makeProduct(id: Int = UUID().hashValue, title: String = "a product", price: Double = 3.33, description: String = "a description", category: String = "a category", image: URL = URL(string: "https://any-image-url.com")!) -> ProductItem {
+        
+        ProductItem(id: id, title: title, price: price, description: description, category: category, image: image)
+    }
+    
+    
+    func assertThat(_ sut: ProductsViewController, isRendering items: [ProductItem], file: StaticString = #filePath, line: UInt = #line) {
+        
+        guard items.count == sut.numberOfRenderedProductViews else {
+            XCTFail("Expected \(items.count) got \(sut.numberOfRenderedProductViews) instead", file: file, line: line)
+            return
+        }
+        XCTAssertEqual(sut.numberOfRenderedProductViews, items.count, file: file, line: line)
+        
+        
+        items.enumerated().forEach { (index, item) in
+            assertThat(sut, hasViewConfiguredFor: item, at: index, file: file, line: line)
+        }
+    }
+    
+    
+    func assertThat(_ sut: ProductsViewController, hasViewConfiguredFor product: ProductItem, at index: Int, file: StaticString = #filePath, line: UInt = #line) {
+        
+        let view = sut.productView(at: index)
+        
+        guard let cell = view as? ProductCell else {
+            XCTFail("Expected \(ProductCell.self) instance but got \(String(describing: view)) indstead", file: file, line: line)
+            return
+        }
+        
+        XCTAssertNotNil(cell)
+        XCTAssertEqual(cell.titleText, product.title, file: file, line: line)
+        XCTAssertEqual(cell.descriptionText, product.description, file: file, line: line)
+        XCTAssertEqual(cell.priceText, "\(product.price)", file: file, line: line)
+    }
+    
     
     class LoaderSpy: ProductsLoader {
         
@@ -86,8 +145,8 @@ class ProductsViewControllerTests: XCTestCase {
         }
         
         
-        func completesProductsLoading(at index: Int = 0) {
-            completions[index](Result.success([]))
+        func completesProductsLoading(with products: [ProductItem] = [],  at index: Int = 0) {
+            completions[index](Result.success(products))
         }
     }
 
@@ -126,6 +185,25 @@ private extension ProductsViewController {
     
     
     var isShowingLoadingIndicator: Bool { refreshControl?.isRefreshing == true }
+    
+    var productSection: Int { 0 }
+    var numberOfRenderedProductViews: Int {
+        tableView.numberOfRows(inSection: productSection)
+    }
+    
+    func productView(at row: Int) -> UITableViewCell? {
+        let ds = tableView.dataSource
+        let indexPath = IndexPath(row: row, section: productSection)
+        return ds?.tableView(tableView, cellForRowAt: indexPath)
+    }
+    
+}
+
+
+private extension ProductCell {
+    var titleText: String? { title.text }
+    var descriptionText: String? { productDescription.text }
+    var priceText: String? { price.text }
 }
 
 
