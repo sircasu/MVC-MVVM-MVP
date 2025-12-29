@@ -131,6 +131,27 @@ class ProductsViewControllerTests: XCTestCase {
         sut.simulateProductImageBeginVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second view become visible")
     }
+        
+    
+    func test_productView_cancelImageLoadingWhenNotVisibleAnymore() {
+        
+        let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)
+        let product1 = makeProduct(image: URL(string: "https://any-url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+        
+        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL requests until image is not visible")
+        
+        
+        sut.simulateProductImageNotVisible(at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image], "Expected one cancelled image URL once first image become is not visible anymore")
+        
+        
+        sut.simulateProductImageNotVisible(at: 1)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected two cancelled image URL once second image become is not visible anymore")
+    }
     
     
     // MARK: - Helpers
@@ -187,7 +208,9 @@ class ProductsViewControllerTests: XCTestCase {
 
 class LoaderSpy: ProductsLoader, ProductImageLoader {
     
+    
     // MARK: - ProductsLoader
+    
     typealias Result = Swift.Result<[ProductItem], Error>
     
     private var productRequests = [(Result) -> Void]()
@@ -211,11 +234,24 @@ class LoaderSpy: ProductsLoader, ProductImageLoader {
     
     
     // MARK: - ProductImageLoader
-    private(set) var loadedImageURLs = [URL]()
     
-    func loadImageData(from url: URL) {
-        loadedImageURLs.append(url)
+    private struct TaskSpy: ImageLoaderTask {
+        var cancelCallback: () -> Void
+        func cancel() {
+            cancelCallback()
+        }
     }
+    
+    private(set) var loadedImageURLs = [URL]()
+    private(set) var cancelledImageURLs = [URL]()
+    
+    func loadImageData(from url: URL) -> ImageLoaderTask {
+        loadedImageURLs.append(url)
+        return TaskSpy { [weak self] in
+            self?.cancelledImageURLs.append(url)
+        }
+    }
+
 }
 
 
@@ -266,11 +302,21 @@ private extension ProductsViewController {
     
     
     //
+    @discardableResult
+    func simulateProductImageBeginVisible(at index: Int) -> ProductCell? {
+        let cell = productView(at: index) as? ProductCell
+        return cell
+    }
     
-    func simulateProductImageBeginVisible(at index: Int) {
-       _ = productView(at: index)
+    func simulateProductImageNotVisible(at row: Int) {
+        let view = simulateProductImageBeginVisible(at: row)
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: row, section: productSection)
+        delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
     }
 }
+
 
 
 private extension ProductCell {

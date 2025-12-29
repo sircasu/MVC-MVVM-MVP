@@ -8,14 +8,20 @@
 import UIKit
 import Core
 
+public protocol ImageLoaderTask {
+    func cancel()
+}
+
 public protocol ProductImageLoader {
-    func loadImageData(from url: URL)
+    func loadImageData(from url: URL) -> ImageLoaderTask
 }
 
 public final class ProductsViewController: UITableViewController {
     
     private var productsLoaders: ProductsLoader?
     private var imageLoader: ProductImageLoader?
+    
+    private var tasks = [IndexPath: ImageLoaderTask]()
     
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
@@ -76,11 +82,15 @@ public final class ProductsViewController: UITableViewController {
         cell.productDescription.text    = row.description
         cell.price.text                 = row.price.toString
         
-        
-        imageLoader?.loadImageData(from: row.image)
-        
+        tasks[indexPath] = imageLoader?.loadImageData(from: row.image)
         
         return cell
+    }
+    
+    
+    public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
     }
 }
 
