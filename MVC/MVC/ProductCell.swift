@@ -12,4 +12,5 @@ public final class ProductCell: UITableViewCell {
     public var productDescription = UILabel()
     public var price = UILabel()
     public var productImageContainer = UIView()
+    public var productImageView = UIImageView()
 }

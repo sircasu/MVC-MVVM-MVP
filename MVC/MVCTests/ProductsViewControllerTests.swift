@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import UIKit
 import Core
 import MVC
 
@@ -177,6 +178,35 @@ class ProductsViewControllerTests: XCTestCase {
         loader.completeImageLoadingWithError(at: 1)
         XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator state change on first view once loading second image completes with error")
         XCTAssertEqual(view1?.isShowingLoadingIndicator, false, "Expect no loading indicator for second view once loading second image completes with error")
+    }
+    
+    
+    func test_productView_rendersImageLoadedFromURL() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()], at: 0)
+        
+        let view0 = sut.simulateProductImageBeginVisible(at: 0)
+        let view1 = sut.simulateProductImageBeginVisible(at: 1)
+        
+        
+        XCTAssertEqual(view0?.renderedImage, .none, "Expected no image for first view while loading first image")
+        XCTAssertEqual(view1?.renderedImage, .none, "Expected no image for second view while loading second image")
+        
+        
+        let imageData0 = UIImage.make(withColor: UIColor.red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+        
+        XCTAssertEqual(view0?.renderedImage, imageData0, "Expected  image for first view on loading first image completes successfully")
+        XCTAssertEqual(view1?.renderedImage, .none, "Expected no image for second view on loading first image completes successfully")
+        
+        
+        let imageData1 = UIImage.make(withColor: UIColor.blue).pngData()!
+        loader.completeImageLoading(with: imageData1, at: 1)
+        
+        XCTAssertEqual(view0?.renderedImage, imageData0, "Expected no image state change for first view on loading second image completes successfully")
+        XCTAssertEqual(view1?.renderedImage, imageData1, "Expected image for second view on loading second image completes successfully")
     }
     
     // MARK: - Helpers
@@ -369,6 +399,8 @@ private extension ProductCell {
     
     
     var isShowingLoadingIndicator: Bool { isShimmering }
+    
+    var renderedImage: Data? { productImageView.image?.pngData() }
 }
 
 

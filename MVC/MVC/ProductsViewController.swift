@@ -83,10 +83,15 @@ public final class ProductsViewController: UITableViewController {
         cell.title.text                 = row.title
         cell.productDescription.text    = row.description
         cell.price.text                 = row.price.toString
-        
+        cell.productImageView.image     = nil
         cell.startShimmering()
         tasks[indexPath] = imageLoader?.loadImageData(from: row.image) {
-            [weak cell] _ in
+            [weak cell] result in
+
+            let imageData = try? result.get()
+            cell?.productImageView.image = imageData.map(UIImage.init) ?? nil
+            
+            
             cell?.stopShimmering()
         }
         
