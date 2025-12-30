@@ -154,6 +154,31 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_productViewLoadingIndicator_isVisibleWhileLoadingImage() {
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()], at: 0)
+        
+        let view0 = sut.simulateProductImageBeginVisible(at: 0)
+        let view1 = sut.simulateProductImageBeginVisible(at: 1)
+        
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, true, "Expect loading indicator for first view when loading first image")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expect loading indicator for second view when loading second image")
+        
+        
+        loader.completeImageLoading(at: 0)
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator for first view once loading first image completes successfully")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expect no loading indicator state change for second view once loading first image completes successfully")
+        
+        
+        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator state change on first view once loading second image completes with error")
+        XCTAssertEqual(view1?.isShowingLoadingIndicator, false, "Expect no loading indicator for second view once loading second image completes with error")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -235,6 +260,8 @@ class LoaderSpy: ProductsLoader, ProductImageLoader {
     
     // MARK: - ProductImageLoader
     
+    typealias ImageLoaderResult = Swift.Result<Data, Error>
+
     private struct TaskSpy: ImageLoaderTask {
         var cancelCallback: () -> Void
         func cancel() {
@@ -242,17 +269,33 @@ class LoaderSpy: ProductsLoader, ProductImageLoader {
         }
     }
     
-    private(set) var loadedImageURLs = [URL]()
+    var loadedImageURLs: [URL] {
+        imageRequests.map { $0.url }
+    }
     private(set) var cancelledImageURLs = [URL]()
+    private var imageRequests = [(url: URL, completion:(ImageLoaderResult) -> Void)]()
     
-    func loadImageData(from url: URL) -> ImageLoaderTask {
-        loadedImageURLs.append(url)
+    func loadImageData(from url: URL, completion: @escaping (ImageLoaderResult) -> Void) -> ImageLoaderTask {
+
+        imageRequests.append((url, completion))
+        
         return TaskSpy { [weak self] in
             self?.cancelledImageURLs.append(url)
         }
     }
 
+    
+    func completeImageLoading(with imageData: Data = Data(), at index: Int = 0) {
+        imageRequests[index].completion(.success(imageData))
+    }
+    
+    
+    func completeImageLoadingWithError(at index: Int = 0) {
+        let error = NSError(domain: "test", code: 0)
+        imageRequests[index].completion(.failure(error))
+    }
 }
+
 
 
 
@@ -323,6 +366,9 @@ private extension ProductCell {
     var titleText: String? { title.text }
     var descriptionText: String? { productDescription.text }
     var priceText: String? { price.text }
+    
+    
+    var isShowingLoadingIndicator: Bool { isShimmering }
 }
 
 
