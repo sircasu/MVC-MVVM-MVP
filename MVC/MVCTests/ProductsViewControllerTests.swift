@@ -294,6 +294,23 @@ class ProductsViewControllerTests: XCTestCase {
         sut.simulateProductImageNearVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second image is near visible")
     }
+        
+    
+    func test_productView_cancelsImageURLReloadWhenNotNearVisibleAnymore() {
+        let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)
+        let product1 = makeProduct(image: URL(string: "https://any-url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [], "Expected no cancelled image URL requests until image is not near visible")
+        
+        sut.simulateProductImageNotNearVisibleAnymore(at: 0)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image], "Expected first cancelled image URL request once first image is not near visible anymore")
+        
+        sut.simulateProductImageNotNearVisibleAnymore(at: 1)
+        XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected second cancelled image URL request once second image is not near visible anymore")
+    }
     
     // MARK: - Helpers
     
@@ -479,6 +496,14 @@ private extension ProductsViewController {
         let ds = tableView.prefetchDataSource
         let index = IndexPath(row: row, section: productSection)
         ds?.tableView(tableView, prefetchRowsAt: [index])
+    }
+    
+    func simulateProductImageNotNearVisibleAnymore(at row: Int) {
+        simulateProductImageNearVisible(at: row)
+        
+        let ds = tableView.prefetchDataSource
+        let index = IndexPath(row: row, section: productSection)
+        ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [index])
     }
 }
 
