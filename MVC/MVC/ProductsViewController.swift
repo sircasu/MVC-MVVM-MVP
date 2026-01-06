@@ -90,8 +90,10 @@ public final class ProductsViewController: UITableViewController {
             [weak cell] result in
 
             let imageData = try? result.get()
-            cell?.productImageView.image = imageData.map(UIImage.init) ?? nil
-            cell?.retryButton.isHidden = (imageData != nil)
+            let image = imageData.map(UIImage.init) ?? nil
+            cell?.productImageView.image = image
+            cell?.retryButton.isHidden = (image != nil)
+        
             cell?.stopShimmering()
         }
         

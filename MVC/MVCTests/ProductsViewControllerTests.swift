@@ -233,6 +233,23 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.isShowingRetryAction, true, "Expect retry action for second view once loading second image completes with error")
     }
     
+        
+    
+    func test_productImageViewRetryButton_isVisibleOnInvalidImageData() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct()], at: 0)
+        
+        let view0 = sut.simulateProductImageBeginVisible(at: 0)
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action while loading image")
+
+        let invalidImageData0 = Data("invalid image data".utf8)
+        loader.completeImageLoading(with: invalidImageData0, at: 0)
+        
+        XCTAssertEqual(view0?.isShowingRetryAction, true, "Expected  retry action for view on loading image completes successfully with invalid image")
+    }
+    
     
     // MARK: - Helpers
     
