@@ -278,6 +278,23 @@ class ProductsViewControllerTests: XCTestCase {
         
     }
     
+    
+    func test_productView_preloadsImageURLWhenNearVisible() {
+        let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)
+        let product1 = makeProduct(image: URL(string: "https://any-url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL requests until image is near visible")
+        
+        sut.simulateProductImageNearVisible(at: 0)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image], "Expected first image URL request once first image is near visible")
+        
+        sut.simulateProductImageNearVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second image is near visible")
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {
@@ -456,6 +473,12 @@ private extension ProductsViewController {
         let delegate = tableView.delegate
         let index = IndexPath(row: row, section: productSection)
         delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+    }
+    
+    func simulateProductImageNearVisible(at row: Int) {
+        let ds = tableView.prefetchDataSource
+        let index = IndexPath(row: row, section: productSection)
+        ds?.tableView(tableView, prefetchRowsAt: [index])
     }
 }
 

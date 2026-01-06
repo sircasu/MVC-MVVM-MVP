@@ -17,7 +17,7 @@ public protocol ProductImageLoader {
     func loadImageData(from url: URL, completion: @escaping (Result) -> Void) -> ImageLoaderTask
 }
 
-public final class ProductsViewController: UITableViewController {
+public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
     
     private var productsLoaders: ProductsLoader?
     private var imageLoader: ProductImageLoader?
@@ -41,6 +41,7 @@ public final class ProductsViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
+        tableView.prefetchDataSource = self
         
         onViewIsAppearing = { [weak self] vc in
             vc.onViewIsAppearing = nil
@@ -114,5 +115,14 @@ public final class ProductsViewController: UITableViewController {
         tasks[indexPath]?.cancel()
         tasks[indexPath] = nil
     }
+    
+
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        indexPaths.forEach { indexPath in
+            let row = tableModel[indexPath.row]
+            _ = imageLoader?.loadImageData(from: row.image) { _ in }
+        }
+    }
+    
 }
 
