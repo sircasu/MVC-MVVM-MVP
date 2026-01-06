@@ -84,14 +84,14 @@ public final class ProductsViewController: UITableViewController {
         cell.productDescription.text    = row.description
         cell.price.text                 = row.price.toString
         cell.productImageView.image     = nil
+        cell.retryButton.isHidden       = true
         cell.startShimmering()
         tasks[indexPath] = imageLoader?.loadImageData(from: row.image) {
             [weak cell] result in
 
             let imageData = try? result.get()
             cell?.productImageView.image = imageData.map(UIImage.init) ?? nil
-            
-            
+            cell?.retryButton.isHidden = (imageData != nil)
             cell?.stopShimmering()
         }
         

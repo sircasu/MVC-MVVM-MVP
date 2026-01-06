@@ -174,7 +174,6 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expect no loading indicator state change for second view once loading first image completes successfully")
         
         
-        
         loader.completeImageLoadingWithError(at: 1)
         XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator state change on first view once loading second image completes with error")
         XCTAssertEqual(view1?.isShowingLoadingIndicator, false, "Expect no loading indicator for second view once loading second image completes with error")
@@ -208,6 +207,32 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view0?.renderedImage, imageData0, "Expected no image state change for first view on loading second image completes successfully")
         XCTAssertEqual(view1?.renderedImage, imageData1, "Expected image for second view on loading second image completes successfully")
     }
+    
+    
+    func test_productImageViewRetryButton_isVisibleOnImageURLLoadError() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()], at: 0)
+        
+        let view0 = sut.simulateProductImageBeginVisible(at: 0)
+        let view1 = sut.simulateProductImageBeginVisible(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view while loading firt image")
+        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action for second view while loading second image")
+        
+        
+        let imageData0 = UIImage.make(withColor: UIColor.red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+        
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expected no retry action for first view on loading first image completes successfully")
+        XCTAssertEqual(view1?.isShowingRetryAction, false, "Expected no retry action for second view on loading first image completes successfully")
+        
+        
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, false, "Expect no retry action state change on first view once loading second image completes with error")
+        XCTAssertEqual(view1?.isShowingRetryAction, true, "Expect retry action for second view once loading second image completes with error")
+    }
+    
     
     // MARK: - Helpers
     
@@ -401,6 +426,8 @@ private extension ProductCell {
     var isShowingLoadingIndicator: Bool { isShimmering }
     
     var renderedImage: Data? { productImageView.image?.pngData() }
+    
+    var isShowingRetryAction: Bool { !retryButton.isHidden }
 }
 
 
