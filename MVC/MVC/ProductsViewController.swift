@@ -85,17 +85,26 @@ public final class ProductsViewController: UITableViewController {
         cell.price.text                 = row.price.toString
         cell.productImageView.image     = nil
         cell.retryButton.isHidden       = true
-        cell.startShimmering()
-        tasks[indexPath] = imageLoader?.loadImageData(from: row.image) {
-            [weak cell] result in
 
-            let imageData = try? result.get()
-            let image = imageData.map(UIImage.init) ?? nil
-            cell?.productImageView.image = image
-            cell?.retryButton.isHidden = (image != nil)
+        let loadImage = { [weak self, weak cell] in
+            guard let self else { return }
+            
+            cell?.productImageContainer.startShimmering()
+            self.tasks[indexPath] = self.imageLoader?.loadImageData(from: row.image) {
+                [weak cell] result in
+
+                let imageData = try? result.get()
+                let image = imageData.map(UIImage.init) ?? nil
+                cell?.productImageView.image = image
+                cell?.retryButton.isHidden = (image != nil)
         
-            cell?.stopShimmering()
+                cell?.productImageContainer.stopShimmering()
+            }
         }
+        
+        loadImage()
+        
+        cell.retryAction = loadImage
         
         return cell
     }

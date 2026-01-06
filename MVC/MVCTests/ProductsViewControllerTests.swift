@@ -165,18 +165,18 @@ class ProductsViewControllerTests: XCTestCase {
         let view0 = sut.simulateProductImageBeginVisible(at: 0)
         let view1 = sut.simulateProductImageBeginVisible(at: 1)
         
-        XCTAssertEqual(view0?.isShowingLoadingIndicator, true, "Expect loading indicator for first view when loading first image")
-        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expect loading indicator for second view when loading second image")
+        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, true, "Expect loading indicator for first view when loading first image")
+        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true, "Expect loading indicator for second view when loading second image")
         
         
         loader.completeImageLoading(at: 0)
-        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator for first view once loading first image completes successfully")
-        XCTAssertEqual(view1?.isShowingLoadingIndicator, true, "Expect no loading indicator state change for second view once loading first image completes successfully")
+        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false, "Expect no loading indicator for first view once loading first image completes successfully")
+        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true, "Expect no loading indicator state change for second view once loading first image completes successfully")
         
         
         loader.completeImageLoadingWithError(at: 1)
-        XCTAssertEqual(view0?.isShowingLoadingIndicator, false, "Expect no loading indicator state change on first view once loading second image completes with error")
-        XCTAssertEqual(view1?.isShowingLoadingIndicator, false, "Expect no loading indicator for second view once loading second image completes with error")
+        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false, "Expect no loading indicator state change on first view once loading second image completes with error")
+        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, false, "Expect no loading indicator for second view once loading second image completes with error")
     }
     
     
@@ -251,6 +251,32 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_productViewRetryAction_retriesImageLoad() {
+        let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)
+        let product1 = makeProduct(image: URL(string: "https://any-url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+        
+        let view0 = sut.simulateProductImageBeginVisible(at: 0)
+        let view1 = sut.simulateProductImageBeginVisible(at: 1)
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected two image URL request for the two visible views")
+        
+        loader.completeImageLoadingWithError(at: 0)
+        loader.completeImageLoadingWithError(at: 1)
+        XCTAssertEqual(view0?.isShowingRetryAction, true, "Expect retry action for second view once loading second image completes with error")
+        XCTAssertEqual(view1?.isShowingRetryAction, true, "Expect retry action for second view once loading second image completes with error")
+        
+        view0?.simulateRetryAction()
+        XCTAssertEqual(view0?.isShowingImageLoadingIndicator, true, "Expect loading indicator for first view when loading first image after retry action")
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image, product0.image], "Expected three image URL request after firt view retry action")
+        
+        view1?.simulateRetryAction()
+        XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true, "Expect loading indicator for second view when loading second image after retry action")
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image, product0.image, product1.image], "Expected four image URL request after second view retry action")
+        
+    }
     
     // MARK: - Helpers
     
@@ -441,11 +467,15 @@ private extension ProductCell {
     var priceText: String? { price.text }
     
     
-    var isShowingLoadingIndicator: Bool { isShimmering }
+    var isShowingImageLoadingIndicator: Bool { productImageContainer.isShimmering }
     
     var renderedImage: Data? { productImageView.image?.pngData() }
     
     var isShowingRetryAction: Bool { !retryButton.isHidden }
+    
+    func simulateRetryAction() {
+        retryButton.simulateTap()
+    }
 }
 
 
