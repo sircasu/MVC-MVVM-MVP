@@ -209,7 +209,7 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
-    func test_productImageViewRetryButton_isVisibleOnImageURLLoadError() {
+    func test_productViewRetryAction_isVisibleOnImageURLLoadError() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
@@ -235,7 +235,7 @@ class ProductsViewControllerTests: XCTestCase {
     
         
     
-    func test_productImageViewRetryButton_isVisibleOnInvalidImageData() {
+    func test_productViewRetryAction_isVisibleOnInvalidImageData() {
         let (sut, loader) = makeSUT()
         
         sut.simulateAppearance()
@@ -249,6 +249,7 @@ class ProductsViewControllerTests: XCTestCase {
         
         XCTAssertEqual(view0?.isShowingRetryAction, true, "Expected  retry action for view on loading image completes successfully with invalid image")
     }
+    
     
     
     // MARK: - Helpers
