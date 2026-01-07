@@ -286,6 +286,7 @@ class ProductsViewControllerTests: XCTestCase {
         
         sut.simulateAppearance()
         loader.completesProductsLoading(with: [product0, product1], at: 0)
+        
         XCTAssertEqual(loader.loadedImageURLs, [], "Expected no image URL requests until image is near visible")
         
         sut.simulateProductImageNearVisible(at: 0)
@@ -310,6 +311,25 @@ class ProductsViewControllerTests: XCTestCase {
         
         sut.simulateProductImageNotNearVisibleAnymore(at: 1)
         XCTAssertEqual(loader.cancelledImageURLs, [product0.image, product1.image], "Expected second cancelled image URL request once second image is not near visible anymore")
+    }
+    
+    
+    func test_productView_reloadsImageURLWhenBecomingVisibleAgain() {
+        let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)
+        let product1 = makeProduct(image: URL(string: "https://any-url-1.com")!)
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [product0, product1], at: 0)
+
+
+        sut.simulateProductBecomingVisibleAgain(at: 0)
+        
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product0.image], "Expected two image URL request after first view becomes visible again")
+        
+        sut.simulateProductBecomingVisibleAgain(at: 1)
+
+        XCTAssertEqual(loader.loadedImageURLs, [product0.image, product0.image, product1.image, product1.image], "Expected two new image URL request after second view becomes visible again")
     }
     
     // MARK: - Helpers
@@ -484,12 +504,15 @@ private extension ProductsViewController {
         return cell
     }
     
-    func simulateProductImageNotVisible(at row: Int) {
+    @discardableResult
+    func simulateProductImageNotVisible(at row: Int) -> ProductCell? {
         let view = simulateProductImageBeginVisible(at: row)
         
         let delegate = tableView.delegate
         let index = IndexPath(row: row, section: productSection)
         delegate?.tableView?(tableView, didEndDisplaying: view!, forRowAt: index)
+        
+        return view
     }
     
     func simulateProductImageNearVisible(at row: Int) {
@@ -504,6 +527,17 @@ private extension ProductsViewController {
         let ds = tableView.prefetchDataSource
         let index = IndexPath(row: row, section: productSection)
         ds?.tableView?(tableView, cancelPrefetchingForRowsAt: [index])
+    }
+    
+    @discardableResult
+    func simulateProductBecomingVisibleAgain(at row: Int) -> ProductCell? {
+        let view = simulateProductImageNotVisible(at: row)
+        
+        let delegate = tableView.delegate
+        let index = IndexPath(row: row, section: productSection)
+        delegate?.tableView?(tableView, willDisplay: view!, forRowAt: index)
+        
+        return view
     }
 }
 

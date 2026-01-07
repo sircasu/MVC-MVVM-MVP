@@ -115,6 +115,9 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
         cancelTask(forRowAt: indexPath)
     }
     
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        startTask(forRowAt: indexPath)
+    }
 
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
@@ -126,6 +129,12 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach(cancelTask)
+    }
+    
+    
+    private func startTask(forRowAt indexPath: IndexPath) {
+        let row = tableModel[indexPath.row]
+        tasks[indexPath] = imageLoader?.loadImageData(from: row.image) { _ in }
     }
     
     
