@@ -9,10 +9,9 @@ import UIKit
 import Core
 
 
-
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
     
-    private var productsLoaders: ProductsLoader?
+    public var refreshController: ProductRefreshViewController?
     private var imageLoader: ProductImageLoader?
     
     private var tasks = [IndexPath: ImageLoaderTask]()
@@ -20,25 +19,33 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
     
-    public var tableModel: [ProductItem] = [ProductItem]()
+    public var tableModel = [ProductItem]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     
-    public convenience init(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) {
+    public convenience init(refreshController: ProductRefreshViewController, imageLoader: ProductImageLoader) {
         self.init()
-        self.productsLoaders = productsLoader
+        self.refreshController = refreshController
         self.imageLoader = imageLoader
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        refreshControl = UIRefreshControl()
-        refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
         tableView.prefetchDataSource = self
+        refreshControl = refreshController?.view
         
         onViewIsAppearing = { [weak self] vc in
             vc.onViewIsAppearing = nil
-            self?.load()
+            
+            self?.refreshController?.onRefresh = { [weak self] products in
+                self?.tableModel = products
+            }
+            
+            self?.refreshController?.refresh()
         }
     }
     
@@ -49,20 +56,6 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
         onViewIsAppearing?(self)
     }
     
-    
-    @objc private func load() {
-        refreshControl?.beginRefreshing()
-        productsLoaders?.load { [weak self] result in
-            switch result {
-            case let .success(products):
-                self?.tableModel = products
-                self?.tableView.reloadData()
-                
-            default: break
-            }
-            self?.refreshControl?.endRefreshing()
-        }
-    }
     
     
 

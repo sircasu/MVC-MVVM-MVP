@@ -31,6 +31,7 @@ extension ProductsViewController {
         }
         
         refreshControl = fake
+        refreshController?.view = fake
     }
     
     
