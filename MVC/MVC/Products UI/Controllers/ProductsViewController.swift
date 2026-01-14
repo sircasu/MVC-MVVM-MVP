@@ -8,13 +8,12 @@
 import UIKit
 import Core
 
-
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
     
     public var refreshController: ProductRefreshViewController?
     private var imageLoader: ProductImageLoader?
     
-    private var tasks = [IndexPath: ImageLoaderTask]()
+    private var cellControllers = [IndexPath: ProductCellController]()
     
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
@@ -65,40 +64,12 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     
     public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let row = tableModel[indexPath.row]
-        let cell = ProductCell()
-        cell.title.text                 = row.title
-        cell.productDescription.text    = row.description
-        cell.price.text                 = row.price.toString
-        cell.productImageView.image     = nil
-        cell.retryButton.isHidden       = true
-
-        let loadImage = { [weak self, weak cell] in
-            guard let self else { return }
-            
-            cell?.productImageContainer.startShimmering()
-            self.tasks[indexPath] = self.imageLoader?.loadImageData(from: row.image) {
-                [weak cell] result in
-
-                let imageData = try? result.get()
-                let image = imageData.map(UIImage.init) ?? nil
-                cell?.productImageView.image = image
-                cell?.retryButton.isHidden = (image != nil)
-        
-                cell?.productImageContainer.stopShimmering()
-            }
-        }
-        
-        loadImage()
-        
-        cell.retryAction = loadImage
-        
-        return cell
+        cellController(forRowAt: indexPath).view()
     }
     
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cancelTask(forRowAt: indexPath)
+        removeCellController(forRowAt: indexPath)
     }
     
     public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -107,26 +78,29 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
 
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            let row = tableModel[indexPath.row]
-            tasks[indexPath] = imageLoader?.loadImageData(from: row.image) { _ in }
+            cellController(forRowAt: indexPath).preload()
         }
     }
     
-    
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        indexPaths.forEach(cancelTask)
+        indexPaths.forEach(removeCellController)
     }
     
+    private func cellController(forRowAt indexPath: IndexPath) -> ProductCellController {
+        let cellModel = tableModel[indexPath.row]
+        let cellController = ProductCellController(model: cellModel, imageLoader: imageLoader!)
+        cellControllers[indexPath] = cellController
+        return cellController
+    }
     
     private func startTask(forRowAt indexPath: IndexPath) {
-        let row = tableModel[indexPath.row]
-        tasks[indexPath] = imageLoader?.loadImageData(from: row.image) { _ in }
+//        let row = tableModel[indexPath.row]
+//        tasks[indexPath] = imageLoader?.loadImageData(from: row.image) { _ in }
+        cellController(forRowAt: indexPath).preload()
     }
     
-    
-    private func cancelTask(forRowAt indexPath: IndexPath) {
-        tasks[indexPath]?.cancel()
-        tasks[indexPath] = nil
+    private func removeCellController(forRowAt indexPath: IndexPath) {
+        cellControllers[indexPath] = nil
     }
 }
 
