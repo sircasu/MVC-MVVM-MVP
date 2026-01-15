@@ -13,22 +13,20 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     public var refreshController: ProductRefreshViewController?
     private var imageLoader: ProductImageLoader?
     
-    private var cellControllers = [IndexPath: ProductCellController]()
     
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
     
-    public var tableModel = [ProductItem]() {
+    public var tableModel = [CellController]() {
         didSet {
             tableView.reloadData()
         }
     }
     
     
-    public convenience init(refreshController: ProductRefreshViewController, imageLoader: ProductImageLoader) {
+    convenience init(refreshController: ProductRefreshViewController) {
         self.init()
         self.refreshController = refreshController
-        self.imageLoader = imageLoader
     }
     
     public override func viewDidLoad() {
@@ -39,10 +37,6 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
         
         onViewIsAppearing = { [weak self] vc in
             vc.onViewIsAppearing = nil
-            
-            self?.refreshController?.onRefresh = { [weak self] products in
-                self?.tableModel = products
-            }
             
             self?.refreshController?.refresh()
         }
@@ -69,7 +63,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        removeCellController(forRowAt: indexPath)
+        cancelCellControllerLoad(forRowAt: indexPath)
     }
     
     public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -83,24 +77,21 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        indexPaths.forEach(removeCellController)
+        indexPaths.forEach(cancelCellControllerLoad)
     }
     
-    private func cellController(forRowAt indexPath: IndexPath) -> ProductCellController {
-        let cellModel = tableModel[indexPath.row]
-        let cellController = ProductCellController(model: cellModel, imageLoader: imageLoader!)
-        cellControllers[indexPath] = cellController
-        return cellController
+    private func cellController(forRowAt indexPath: IndexPath) -> CellController {
+
+        return tableModel[indexPath.row]
     }
     
     private func startTask(forRowAt indexPath: IndexPath) {
-//        let row = tableModel[indexPath.row]
-//        tasks[indexPath] = imageLoader?.loadImageData(from: row.image) { _ in }
+
         cellController(forRowAt: indexPath).preload()
     }
     
-    private func removeCellController(forRowAt indexPath: IndexPath) {
-        cellControllers[indexPath] = nil
+    private func cancelCellControllerLoad(forRowAt indexPath: IndexPath) {
+        cellController(forRowAt: indexPath).cancelLoad()
     }
 }
 

@@ -15,9 +15,22 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
+        
         let refreshController = ProductRefreshViewController(productsLoader: productsLoader)
 
-        let vc = ProductsViewController(refreshController: refreshController, imageLoader: imageLoader)
+        
+        let vc = ProductsViewController(refreshController: refreshController)
+        
+        
+        refreshController.onRefresh = { [weak vc] items in
+            guard let vc else { return }
+            
+            vc.tableModel = items.map { ProductCellController(
+                model: $0,
+                imageLoader: imageLoader
+            )}
+        }
+
         
         return vc
     }

@@ -8,7 +8,13 @@
 import UIKit
 import Core
 
-public final class ProductCellController {
+public protocol CellController {
+    func view() -> UITableViewCell
+    func preload()
+    func cancelLoad()
+}
+
+public final class ProductCellController: CellController {
     
     private var task: ImageLoaderTask?
     private let model: ProductItem
@@ -19,7 +25,7 @@ public final class ProductCellController {
         self.imageLoader = imageLoader
     }
     
-    func view() -> UITableViewCell {
+    public func view() -> UITableViewCell {
         
         let cell = ProductCell()
         cell.title.text                 = model.title
@@ -52,14 +58,16 @@ public final class ProductCellController {
     }
     
     
-    func preload() {
+    public func preload() {
         task = imageLoader.loadImageData(from: model.image) { _ in }
     }
     
     
-    deinit {
+    public func cancelLoad() {
         task?.cancel()
     }
+    
+
 }
 
 
