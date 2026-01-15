@@ -22,16 +22,20 @@ public final class ProductsUIComposer {
         let vc = ProductsViewController(refreshController: refreshController)
         
         
-        refreshController.onRefresh = { [weak vc] items in
-            guard let vc else { return }
-            
-            vc.tableModel = items.map { ProductCellController(
+        refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: imageLoader)
+        
+        
+        return vc
+    }
+    
+    
+    private static func adaptProductToCellController(forwardingTo controller: ProductsViewController, with imageLoader: ProductImageLoader) -> ([ProductItem]) -> Void {
+        
+         { [weak controller] items in
+            controller?.tableModel = items.map { ProductCellController(
                 model: $0,
                 imageLoader: imageLoader
             )}
         }
-
-        
-        return vc
     }
 }
