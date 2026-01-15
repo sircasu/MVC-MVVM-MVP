@@ -8,25 +8,29 @@
 import UIKit
 import Core
 
-public protocol CellController {
-    func view() -> UITableViewCell
-    func preload()
-    func cancelLoad()
-}
 
-public final class ProductCellController: CellController {
+public typealias CellController = UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching
+
+
+public final class ProductCellController: NSObject {
     
     private var task: ImageLoaderTask?
     private let model: ProductItem
     private let imageLoader: ProductImageLoader
+    private var cell: ProductCell?
     
     public init(model: ProductItem, imageLoader: ProductImageLoader) {
         self.model = model
         self.imageLoader = imageLoader
     }
+}
+
+extension ProductCellController: CellController {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        1
+    }
     
-    public func view() -> UITableViewCell {
-        
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = ProductCell()
         cell.title.text                 = model.title
         cell.productDescription.text    = model.description
@@ -54,20 +58,33 @@ public final class ProductCellController: CellController {
         
         cell.retryAction = loadImage
         
+        self.cell = cell
         return cell
     }
     
+    public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        preload()
+    }
     
-    public func preload() {
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        preload()
+    }
+    
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        cancelLoad()
+    }
+    
+    public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        cancelLoad()
+    }
+    
+    private func preload() {
         task = imageLoader.loadImageData(from: model.image) { _ in }
     }
     
-    
-    public func cancelLoad() {
+    private func cancelLoad() {
         task?.cancel()
+        cell = nil
     }
     
-
 }
-
-
