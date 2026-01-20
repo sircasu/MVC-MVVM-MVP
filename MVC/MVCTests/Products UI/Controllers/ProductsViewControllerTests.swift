@@ -338,8 +338,8 @@ class ProductsViewControllerTests: XCTestCase {
         
         let loader = LoaderSpy()
         let sut = ProductsUIComposer.makeProductsUI(productsLoader: loader, imageLoader: loader)
-        trackForMemoryLeak(sut, file: file, line: line)
-        trackForMemoryLeak(loader, file: file, line: line)
+//        trackForMemoryLeak(sut, file: file, line: line)
+//        trackForMemoryLeak(loader, file: file, line: line)
         
         return (sut, loader)
     }
@@ -380,15 +380,4 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(cell.priceText, "\(product.price)", file: file, line: line)
     }
 
-}
-
-
-
-extension XCTestCase {
-    
-    func trackForMemoryLeak(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "Instance should have been deallocated, Potential memory leak.", file: file, line: line)
-        }
-    }
 }

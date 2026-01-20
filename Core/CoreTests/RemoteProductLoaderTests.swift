@@ -50,6 +50,8 @@ final class RemoteProductLoaderTests: XCTestCase {
         let loader = HTTPClientSpy()
         let sut = RemoteProductLoader(url: url, loader: loader)
         
+        trackForMemoryLeak(loader, file: file, line: line)
+        trackForMemoryLeak(sut, file: file, line: line)
         
         return (sut, loader)
     }
