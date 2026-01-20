@@ -11,9 +11,9 @@ import Core
 class RemoteProductLoader {
     
     let url: URL
-    let loader: RemoteLoaderSpy
+    let loader: HTTPClientSpy
     
-    init(url: URL, loader: RemoteLoaderSpy) {
+    init(url: URL, loader: HTTPClientSpy) {
         self.url = url
         self.loader = loader
     }
@@ -27,26 +27,35 @@ class RemoteProductLoader {
 final class RemoteProductLoaderTests: XCTestCase {
     
     func test_init_doesNotAskForProducts() {
-        let url = URL(string: "http://any-url")!
-        let loader = RemoteLoaderSpy()
-        let _ = RemoteProductLoader(url: url, loader: loader)
+
+        let (_, loader) = makeSUT()
         
         XCTAssertEqual(loader.loadCallCount, 0)
     }
     
     
     func test_load_requestsDataFromURL() {
-        let url = URL(string: "http://any-url")!
-        let loader = RemoteLoaderSpy()
-        let sut = RemoteProductLoader(url: url, loader: loader)
-        
+        let (sut, loader) = makeSUT()
+
         sut.load()
         
         XCTAssertEqual(loader.loadCallCount, 1)
     }
+    
+    
+    // MARK: - Helpers
+    
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductLoader, loader: HTTPClientSpy) {
+        let url = URL(string: "http://any-url")!
+        let loader = HTTPClientSpy()
+        let sut = RemoteProductLoader(url: url, loader: loader)
+        
+        
+        return (sut, loader)
+    }
 }
 
-class RemoteLoaderSpy {
+class HTTPClientSpy {
     var loadCallCount = 0
     
     func load() {
