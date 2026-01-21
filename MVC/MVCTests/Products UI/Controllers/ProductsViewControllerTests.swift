@@ -338,8 +338,8 @@ class ProductsViewControllerTests: XCTestCase {
         
         let loader = LoaderSpy()
         let sut = ProductsUIComposer.makeProductsUI(productsLoader: loader, imageLoader: loader)
-//        trackForMemoryLeak(sut, file: file, line: line)
-//        trackForMemoryLeak(loader, file: file, line: line)
+        trackForMemoryLeak(sut, file: file, line: line)
+        trackForMemoryLeak(loader, file: file, line: line)
         
         return (sut, loader)
     }

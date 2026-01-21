@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "49BDD68E-8D0B-4351-B34B-31AD9A22C3A2",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Core.xcodeproj",
+        "identifier" : "853A28E02EF8487F002F1F63",
+        "name" : "CoreTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -13,4 +13,7 @@
    <FileRef
       location = "group:MVC/MVCTests/MVC.xctestplan">
    </FileRef>
+   <FileRef
+      location = "group:Core/CoreTests/CoreTests.xctestplan">
+   </FileRef>
 </Workspace>
