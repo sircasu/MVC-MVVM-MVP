@@ -8,18 +8,20 @@
 import XCTest
 import Core
 
+protocol HTTPClient {}
+
 class RemoteProductLoader {
     
     let url: URL
-    let loader: HTTPClientSpy
+    let client: HTTPClientSpy
     
-    init(url: URL, loader: HTTPClientSpy) {
+    init(url: URL, client: HTTPClientSpy) {
         self.url = url
-        self.loader = loader
+        self.client = client
     }
     
     func load() {
-        loader.load()
+        client.load()
     }
 }
 
@@ -45,15 +47,15 @@ final class RemoteProductLoaderTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductLoader, loader: HTTPClientSpy) {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductLoader, client: HTTPClientSpy) {
         let url = URL(string: "http://any-url")!
-        let loader = HTTPClientSpy()
-        let sut = RemoteProductLoader(url: url, loader: loader)
+        let client = HTTPClientSpy()
+        let sut = RemoteProductLoader(url: url, client: client)
         
-        trackForMemoryLeak(loader, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
+        trackForMemoryLeak(client, file: file, line: line)
         
-        return (sut, loader)
+        return (sut, client)
     }
 }
 
