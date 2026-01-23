@@ -71,25 +71,9 @@ final class RemoteProductLoaderTests: XCTestCase {
         let expectedError = NSError(domain: "test", code: 0)
         let (sut, client) = makeSUT()
         
-        var receivedError: NSError?
-        let exp = expectation(description: "Waiting for load to complete")
-        
-        sut.getProducts() { result in
-            switch result {
-            case .success: XCTFail("Expected error got success instead")
-            case let .failure(error as NSError):
-                receivedError = error
-            }
-        
-            exp.fulfill()
+        expect(sut, toCompleteWith: .failure(expectedError)) {
+            client.completeWithError(expectedError)
         }
-        
-        client.completeWithError(expectedError, at: 0)
-        wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertNotNil(receivedError)
-        XCTAssertEqual(receivedError, expectedError)
-
     }
 
     
@@ -105,6 +89,29 @@ final class RemoteProductLoaderTests: XCTestCase {
         
         return (sut, client)
     }
+    
+    func expect(_ sut: RemoteProductLoader, toCompleteWith expectedResult : ProductsLoader.Result, when action: (() -> Void), file: StaticString = #filePath, line: UInt = #line) {
+        
+        let exp = expectation(description: "Waiting for load to complete")
+        
+        sut.getProducts() { receivedResult in
+
+            switch (receivedResult, expectedResult) {
+            case (.success(_), .success(_)):
+                break
+            case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
+                XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+            default: XCTFail("Expected result \(expectedResult) but got \(receivedResult) instead", file: file, line: line)
+            }
+            
+            exp.fulfill()
+        }
+        
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
 }
 
 class HTTPClientSpy: HTTPClient {
