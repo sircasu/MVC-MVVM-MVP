@@ -16,16 +16,23 @@ protocol HTTPClient {
 class RemoteProductLoader {
     
     let url: URL
-    let client: HTTPClientSpy
+    let client: HTTPClient
     
-    init(url: URL, client: HTTPClientSpy) {
+    init(url: URL, client: HTTPClient) {
         self.url = url
         self.client = client
     }
     
-    func load() {
+    func getProducts(completion: @escaping (ProductsLoader.Result) -> Void) {
         
-        client.perform(URLRequest(url: url)) {_ in}
+        client.perform(URLRequest(url: url)) { result in
+            
+            switch result {
+            case let .failure(error):
+                completion(.failure(error))
+            default: break
+            }
+        }
     }
 }
 
@@ -36,32 +43,55 @@ final class RemoteProductLoaderTests: XCTestCase {
 
         let (_, client) = makeSUT()
         
-        XCTAssertEqual(client.loadCallCount, 0)
+        XCTAssertEqual(client.messages.count, 0)
     }
     
     
-    func test_load_requestsProductsFromURL() {
+    func test_getProducts_requestsProductsFromURL() {
         let (sut, client) = makeSUT()
 
-        sut.load()
+        sut.getProducts() { _ in }
         
-        XCTAssertEqual(client.loadCallCount, 1)
+        XCTAssertEqual(client.requests.count, 1)
     }
     
         
     
-    func test_loadTwice_requestsProductsFromURLTwice() {
+    func test_getProductsTwice_requestsProductsFromURLTwice() {
         let (sut, client) = makeSUT()
 
-        sut.load()
-        sut.load()
+        sut.getProducts() { _ in }
+        sut.getProducts() { _ in }
         
-        XCTAssertEqual(client.loadCallCount, 2)
+        XCTAssertEqual(client.requests.count, 2)
     }
     
     
-    
-    
+    func test_load_deliversErrorOnClientError() {
+        let expectedError = NSError(domain: "test", code: 0)
+        let (sut, client) = makeSUT()
+        
+        var receivedError: NSError?
+        let exp = expectation(description: "Waiting for load to complete")
+        
+        sut.getProducts() { result in
+            switch result {
+            case .success: XCTFail("Expected error got success instead")
+            case let .failure(error as NSError):
+                receivedError = error
+            }
+        
+            exp.fulfill()
+        }
+        
+        client.completeWithError(expectedError, at: 0)
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertNotNil(receivedError)
+        XCTAssertEqual(receivedError, expectedError)
+
+    }
+
     
     // MARK: - Helpers
     
@@ -78,9 +108,20 @@ final class RemoteProductLoaderTests: XCTestCase {
 }
 
 class HTTPClientSpy: HTTPClient {
-    var loadCallCount = 0
+
+    
+    var messages = [(request: URLRequest, completion: (HTTPClient.Result) -> Void)]()
+    
+    var requests: [URLRequest] {
+        messages.map { $0.request }
+    }
     
     func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void) {
-        loadCallCount += 1
+        messages.append((request, completion))
+    }
+    
+    
+    func completeWithError(_ error: Error, at index: Int = 0) {
+        messages[index].completion(.failure(error))
     }
 }
