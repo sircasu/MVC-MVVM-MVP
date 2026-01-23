@@ -18,6 +18,12 @@ class RemoteProductLoader {
     let url: URL
     let client: HTTPClient
     
+    
+    public enum Error: Swift.Error {
+        case invalidData
+    }
+    
+    
     init(url: URL, client: HTTPClient) {
         self.url = url
         self.client = client
@@ -28,9 +34,12 @@ class RemoteProductLoader {
         client.perform(URLRequest(url: url)) { result in
             
             switch result {
+            case let .success((_, response)):
+                if response.statusCode != 200 {
+                    completion(.failure(Error.invalidData))
+                }
             case let .failure(error):
                 completion(.failure(error))
-            default: break
             }
         }
     }
@@ -67,7 +76,7 @@ final class RemoteProductLoaderTests: XCTestCase {
     }
     
     
-    func test_load_deliversErrorOnClientError() {
+    func test_getProducts_deliversErrorOnClientError() {
         let expectedError = NSError(domain: "test", code: 0)
         let (sut, client) = makeSUT()
         
@@ -76,6 +85,14 @@ final class RemoteProductLoaderTests: XCTestCase {
         }
     }
 
+    
+    func test_getProducts_deliverInvalidDataErrorOnNon200HTTPStatusCode() {
+        let (sut, client) = makeSUT()
+        
+        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+            client.complete(withStatusCode: 500, at: 0)
+        }
+    }
     
     // MARK: - Helpers
     
@@ -127,6 +144,12 @@ class HTTPClientSpy: HTTPClient {
         messages.append((request, completion))
     }
     
+    func complete(withStatusCode code: Int, at index: Int = 0) {
+        let anyURL = URL(string: "http://any-url.com")!
+        let response = HTTPURLResponse(url: anyURL, statusCode: code, httpVersion: nil, headerFields: nil)!
+        
+        messages[index].completion(.success((Data(), response)))
+    }
     
     func completeWithError(_ error: Error, at index: Int = 0) {
         messages[index].completion(.failure(error))
