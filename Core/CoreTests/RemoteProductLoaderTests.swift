@@ -8,7 +8,10 @@
 import XCTest
 import Core
 
-protocol HTTPClient {}
+protocol HTTPClient {
+    typealias Result = Swift.Result<(Data, HTTPURLResponse), Error>
+    func perform(_ request: URLRequest, completion: @escaping (Result) -> Void)
+}
 
 class RemoteProductLoader {
     
@@ -21,7 +24,8 @@ class RemoteProductLoader {
     }
     
     func load() {
-        client.load()
+        
+        client.perform(URLRequest(url: url)) {_ in}
     }
 }
 
@@ -30,18 +34,18 @@ final class RemoteProductLoaderTests: XCTestCase {
     
     func test_init_doesNotAskForProducts() {
 
-        let (_, loader) = makeSUT()
+        let (_, client) = makeSUT()
         
-        XCTAssertEqual(loader.loadCallCount, 0)
+        XCTAssertEqual(client.loadCallCount, 0)
     }
     
     
     func test_load_requestsDataFromURL() {
-        let (sut, loader) = makeSUT()
+        let (sut, client) = makeSUT()
 
         sut.load()
         
-        XCTAssertEqual(loader.loadCallCount, 1)
+        XCTAssertEqual(client.loadCallCount, 1)
     }
     
     
@@ -59,10 +63,10 @@ final class RemoteProductLoaderTests: XCTestCase {
     }
 }
 
-class HTTPClientSpy {
+class HTTPClientSpy: HTTPClient {
     var loadCallCount = 0
     
-    func load() {
+    func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void) {
         loadCallCount += 1
     }
 }
