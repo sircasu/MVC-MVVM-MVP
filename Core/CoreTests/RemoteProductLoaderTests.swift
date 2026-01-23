@@ -89,8 +89,13 @@ final class RemoteProductLoaderTests: XCTestCase {
     func test_getProducts_deliverInvalidDataErrorOnNon200HTTPStatusCode() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
-            client.complete(withStatusCode: 500, at: 0)
+        let notValidStatusCodes = [199, 201, 300, 400, 500]
+        
+        notValidStatusCodes.enumerated().forEach { (index, code) in
+        
+            expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+                client.complete(withStatusCode: code, at: index)
+            }
         }
     }
     
@@ -144,11 +149,11 @@ class HTTPClientSpy: HTTPClient {
         messages.append((request, completion))
     }
     
-    func complete(withStatusCode code: Int, at index: Int = 0) {
+    func complete(data: Data = Data(), withStatusCode code: Int, at index: Int = 0) {
         let anyURL = URL(string: "http://any-url.com")!
         let response = HTTPURLResponse(url: anyURL, statusCode: code, httpVersion: nil, headerFields: nil)!
         
-        messages[index].completion(.success((Data(), response)))
+        messages[index].completion(.success((data, response)))
     }
     
     func completeWithError(_ error: Error, at index: Int = 0) {
