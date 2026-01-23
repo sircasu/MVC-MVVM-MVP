@@ -40,13 +40,27 @@ final class RemoteProductLoaderTests: XCTestCase {
     }
     
     
-    func test_load_requestsDataFromURL() {
+    func test_load_requestsProductsFromURL() {
         let (sut, client) = makeSUT()
 
         sut.load()
         
         XCTAssertEqual(client.loadCallCount, 1)
     }
+    
+        
+    
+    func test_loadTwice_requestsProductsFromURLTwice() {
+        let (sut, client) = makeSUT()
+
+        sut.load()
+        sut.load()
+        
+        XCTAssertEqual(client.loadCallCount, 2)
+    }
+    
+    
+    
     
     
     // MARK: - Helpers
