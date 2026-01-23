@@ -34,8 +34,10 @@ class RemoteProductLoader {
         client.perform(URLRequest(url: url)) { result in
             
             switch result {
-            case let .success((_, response)):
+            case let .success((data, response)):
                 if response.statusCode != 200 {
+                    completion(.failure(Error.invalidData))
+                } else if data.isEmpty {
                     completion(.failure(Error.invalidData))
                 }
             case let .failure(error):
@@ -99,6 +101,17 @@ final class RemoteProductLoaderTests: XCTestCase {
         }
     }
     
+    
+    func test_getProducts_deliverInvalidDataErrorOn200HTTPStatusCodeWithEmptyData() {
+        let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+            let emptyData = Data()
+            client.complete(withStatusCode: 200, data: emptyData)
+        }
+    }
+    
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductLoader, client: HTTPClientSpy) {
@@ -149,7 +162,7 @@ class HTTPClientSpy: HTTPClient {
         messages.append((request, completion))
     }
     
-    func complete(data: Data = Data(), withStatusCode code: Int, at index: Int = 0) {
+    func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
         let anyURL = URL(string: "http://any-url.com")!
         let response = HTTPURLResponse(url: anyURL, statusCode: code, httpVersion: nil, headerFields: nil)!
         
