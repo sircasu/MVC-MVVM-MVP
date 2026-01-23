@@ -21,6 +21,7 @@ class RemoteProductLoader {
     
     public enum Error: Swift.Error {
         case invalidData
+        case connectivity
     }
     
     
@@ -41,7 +42,7 @@ class RemoteProductLoader {
                     completion(.failure(Error.invalidData))
                 }
             case let .failure(error):
-                completion(.failure(error))
+                completion(.failure(Error.connectivity))
             }
         }
     }
@@ -78,12 +79,11 @@ final class RemoteProductLoaderTests: XCTestCase {
     }
     
     
-    func test_getProducts_deliversErrorOnClientError() {
-        let expectedError = NSError(domain: "test", code: 0)
+    func test_getProducts_deliversConnectivityErrorOnClientError() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(expectedError)) {
-            client.completeWithError(expectedError)
+        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.connectivity)) {
+            client.completeWithError(NSError(domain: "test", code: 0))
         }
     }
 
@@ -163,8 +163,7 @@ class HTTPClientSpy: HTTPClient {
     }
     
     func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
-        let anyURL = URL(string: "http://any-url.com")!
-        let response = HTTPURLResponse(url: anyURL, statusCode: code, httpVersion: nil, headerFields: nil)!
+        let response = HTTPURLResponse(url: messages[index].request.url!, statusCode: code, httpVersion: nil, headerFields: nil)!
         
         messages[index].completion(.success((data, response)))
     }
