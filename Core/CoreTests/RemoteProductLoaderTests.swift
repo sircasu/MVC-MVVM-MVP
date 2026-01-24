@@ -29,6 +29,16 @@ public struct RemoteProductItem: Decodable {
         self.category = category
         self.image = image
     }
+    
+    var toProductItem: ProductItem {
+        ProductItem(
+            id: id,
+            title: title,
+            price: price,
+            description: description,
+            category: category,
+            image: image)
+    }
 }
 
 
@@ -57,8 +67,8 @@ class RemoteProductLoader {
             case let .success((data, response)):
                 if response.statusCode != 200 {
                     completion(.failure(Error.invalidData))
-                } else if response.statusCode == 200, let _ = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
-                    completion(.success([]))
+                } else if response.statusCode == 200, let items = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
+                    completion(.success(items.map { $0.toProductItem }))
                 } else {
                     completion(.failure(Error.invalidData))
                 }
@@ -68,6 +78,7 @@ class RemoteProductLoader {
         }
     }
 }
+
 
 
 final class RemoteProductLoaderTests: XCTestCase {
@@ -88,7 +99,6 @@ final class RemoteProductLoaderTests: XCTestCase {
         XCTAssertEqual(client.requests.count, 1)
     }
     
-        
     
     func test_getProductsTwice_requestsProductsFromURLTwice() {
         let (sut, client) = makeSUT()
@@ -130,7 +140,8 @@ final class RemoteProductLoaderTests: XCTestCase {
             let invalidData = makeInvalidJSON()
             client.complete(withStatusCode: 200, data: invalidData)
         }
-    }    
+    }
+    
     
     func test_getProducts_deliversEmptyDataOn200HTTPStatusCodeWithEmptyJSONListData() {
         let (sut, client) = makeSUT()
@@ -141,6 +152,17 @@ final class RemoteProductLoaderTests: XCTestCase {
         }
     }
     
+    
+    func test_getProducts_deliversItemsOnProductOn200HTTPStatusCodeWithValidJSONListData() {
+        let product1 = makeItem(title: "a product 1", price: 12.0, description: "a description 1")
+        let product2 = makeItem(title: "a product 2", price: 4.88, description: "a description 2")
+        let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: .success([product1.model, product2.model])) {
+            let json = makeItemsJSON([product1.json, product2.json])
+            client.complete(withStatusCode: 200, data: json)
+        }
+    }
     
     // MARK: - Helpers
     
@@ -162,8 +184,8 @@ final class RemoteProductLoaderTests: XCTestCase {
         sut.getProducts() { receivedResult in
 
             switch (receivedResult, expectedResult) {
-            case (.success(_), .success(_)):
-                break
+            case let (.success(receivedItems), .success(expectedItems)):
+                XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
             case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
             default: XCTFail("Expected result \(expectedResult) but got \(receivedResult) instead", file: file, line: line)
@@ -183,6 +205,29 @@ final class RemoteProductLoaderTests: XCTestCase {
     
     private func makeEmptyJSON() -> Data {
         Data("[]".utf8)
+    }
+    
+
+    
+    private func makeItem(id: Int = UUID().hashValue, title: String = "a product", price: Double = 3.33, description: String = "a description", category: String = "a category", image: URL = URL(string: "https://any-image-url.com")!) -> (model: ProductItem, json: [String: Any]) {
+        
+        let model = ProductItem(id: id, title: title, price: price, description: description, category: category, image: image)
+        
+        let json = [
+            "id": model.id,
+            "title": model.title,
+            "price": model.price,
+            "description": model.description,
+            "category": model.category,
+            "image": model.image.absoluteString
+        ] as [String : Any]
+        
+        return (model, json)
+    }
+    
+    private func makeItemsJSON(_ items: [[String: Any]]) -> Data {
+        let json = items
+        return try! JSONSerialization.data(withJSONObject: json)
     }
     
 }
