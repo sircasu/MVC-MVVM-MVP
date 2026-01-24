@@ -59,6 +59,8 @@ class RemoteProductLoader {
                     completion(.failure(Error.invalidData))
                 } else if response.statusCode == 200, let _ = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
                     completion(.failure(Error.invalidData))
+                } else {
+                    completion(.failure(Error.invalidData))
                 }
             case .failure:
                 completion(.failure(Error.connectivity))
@@ -121,6 +123,15 @@ final class RemoteProductLoaderTests: XCTestCase {
     }
     
     
+    func test_getProducts_deliverInvalidDataErrorOn200HTTPStatusCodeInvalidData() {
+        let (sut, client) = makeSUT()
+
+        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+            let invalidData = makeInvalidJSON()
+            client.complete(withStatusCode: 200, data: invalidData)
+        }
+    }    
+    
     func test_getProducts_deliverInvalidDataErrorOn200HTTPStatusCodeWithEmptyData() {
         let (sut, client) = makeSUT()
 
@@ -166,6 +177,9 @@ final class RemoteProductLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    private func makeInvalidJSON() -> Data {
+        Data("invalid json".utf8)
+    }
     
     private func makeEmptyJSON() -> Data {
         Data("[]".utf8)
