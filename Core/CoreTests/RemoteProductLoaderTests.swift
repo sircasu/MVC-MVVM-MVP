@@ -8,46 +8,6 @@
 import XCTest
 import Core
 
-class RemoteProductLoader {
-    
-    let url: URL
-    let client: HTTPClient
-    
-    
-    public enum Error: Swift.Error {
-        case invalidData
-        case connectivity
-    }
-    
-    
-    init(url: URL, client: HTTPClient) {
-        self.url = url
-        self.client = client
-    }
-    
-    func getProducts(completion: @escaping (ProductsLoader.Result) -> Void) {
-        
-        client.perform(URLRequest(url: url)) { [weak self] result in
-            
-            guard self != nil else { return }
-            
-            switch result {
-            case let .success((data, response)):
-                if response.statusCode != 200 {
-                    completion(.failure(Error.invalidData))
-                } else if response.statusCode == 200, let items = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
-                    completion(.success(items.map { $0.toProductItem }))
-                } else {
-                    completion(.failure(Error.invalidData))
-                }
-            case .failure:
-                completion(.failure(Error.connectivity))
-            }
-        }
-    }
-}
-
-
 
 final class RemoteProductLoaderTests: XCTestCase {
     
