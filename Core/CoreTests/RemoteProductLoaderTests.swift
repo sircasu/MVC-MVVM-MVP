@@ -61,7 +61,9 @@ class RemoteProductLoader {
     
     func getProducts(completion: @escaping (ProductsLoader.Result) -> Void) {
         
-        client.perform(URLRequest(url: url)) { result in
+        client.perform(URLRequest(url: url)) { [weak self] result in
+            
+            guard self != nil else { return }
             
             switch result {
             case let .success((data, response)):
@@ -150,6 +152,22 @@ final class RemoteProductLoaderTests: XCTestCase {
             let emptyData = makeEmptyJSON()
             client.complete(withStatusCode: 200, data: emptyData)
         }
+    }
+    
+    
+    func test_getProducts_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
+        let anyURL = URL(string: "https://any-url.com")!
+        let client = HTTPClientSpy()
+        var sut: RemoteProductLoader? = RemoteProductLoader(url: anyURL, client: client)
+        
+        var receivedResults = [ProductsLoader.Result]()
+        sut?.getProducts { receivedResults.append($0) }
+        
+        sut = nil
+        
+        client.complete(withStatusCode: 200, data: makeItemsJSON([]))
+        
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     
