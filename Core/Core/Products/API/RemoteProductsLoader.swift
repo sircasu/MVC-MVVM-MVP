@@ -32,16 +32,11 @@ public final class RemoteProductsLoader: ProductsLoader {
             
             switch result {
             case let .success((data, response)):
-                if response.statusCode != 200 {
-                    completion(.failure(Error.invalidData))
-                } else if response.statusCode == 200, let items = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
-                    completion(.success(items.map { $0.toProductItem }))
-                } else {
-                    completion(.failure(Error.invalidData))
-                }
+                completion(ProductItemMapper.map(data: data, response: response))
             case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
     }
 }
+
