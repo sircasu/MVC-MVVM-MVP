@@ -13,6 +13,25 @@ protocol HTTPClient {
     func perform(_ request: URLRequest, completion: @escaping (Result) -> Void)
 }
 
+public struct RemoteProductItem: Decodable {
+    public let id: Int
+    public let title: String
+    public let price: Double
+    public let description: String
+    public let category: String
+    public let image: URL
+    
+    public init(id: Int, title: String, price: Double, description: String, category: String, image: URL) {
+        self.id = id
+        self.title = title
+        self.price = price
+        self.description = description
+        self.category = category
+        self.image = image
+    }
+}
+
+
 class RemoteProductLoader {
     
     let url: URL
@@ -38,10 +57,10 @@ class RemoteProductLoader {
             case let .success((data, response)):
                 if response.statusCode != 200 {
                     completion(.failure(Error.invalidData))
-                } else if data.isEmpty {
+                } else if response.statusCode == 200, let _ = try? JSONDecoder().decode([RemoteProductItem].self, from: data) {
                     completion(.failure(Error.invalidData))
                 }
-            case let .failure(error):
+            case .failure:
                 completion(.failure(Error.connectivity))
             }
         }
@@ -106,7 +125,7 @@ final class RemoteProductLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
 
         expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
-            let emptyData = Data()
+            let emptyData = makeEmptyJSON()
             client.complete(withStatusCode: 200, data: emptyData)
         }
     }
@@ -145,6 +164,11 @@ final class RemoteProductLoaderTests: XCTestCase {
         action()
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    
+    private func makeEmptyJSON() -> Data {
+        Data("[]".utf8)
     }
     
 }
