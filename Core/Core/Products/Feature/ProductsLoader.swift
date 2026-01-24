@@ -9,5 +9,5 @@ import Foundation
 
 public protocol ProductsLoader {
     typealias Result = Swift.Result<[ProductItem], Error>
-    func load(completion: @escaping (Result) -> Void)
+    func getProducts(completion: @escaping (Result) -> Void)
 }

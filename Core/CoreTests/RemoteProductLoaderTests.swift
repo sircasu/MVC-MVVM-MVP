@@ -41,7 +41,7 @@ final class RemoteProductLoaderTests: XCTestCase {
     func test_getProducts_deliversConnectivityErrorOnClientError() {
         let (sut, client) = makeSUT()
         
-        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.connectivity)) {
+        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.connectivity)) {
             client.completeWithError(NSError(domain: "test", code: 0))
         }
     }
@@ -54,7 +54,7 @@ final class RemoteProductLoaderTests: XCTestCase {
         
         notValidStatusCodes.enumerated().forEach { (index, code) in
         
-            expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+            expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData)) {
                 client.complete(withStatusCode: code, at: index)
             }
         }
@@ -64,7 +64,7 @@ final class RemoteProductLoaderTests: XCTestCase {
     func test_getProducts_deliverInvalidDataErrorOn200HTTPStatusCodeInvalidJSONData() {
         let (sut, client) = makeSUT()
 
-        expect(sut, toCompleteWith: .failure(RemoteProductLoader.Error.invalidData)) {
+        expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.invalidData)) {
             let invalidData = makeInvalidJSON()
             client.complete(withStatusCode: 200, data: invalidData)
         }
@@ -84,7 +84,7 @@ final class RemoteProductLoaderTests: XCTestCase {
     func test_getProducts_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
         let anyURL = URL(string: "https://any-url.com")!
         let client = HTTPClientSpy()
-        var sut: RemoteProductLoader? = RemoteProductLoader(url: anyURL, client: client)
+        var sut: RemoteProductsLoader? = RemoteProductsLoader(url: anyURL, client: client)
         
         var receivedResults = [ProductsLoader.Result]()
         sut?.getProducts { receivedResults.append($0) }
@@ -110,10 +110,10 @@ final class RemoteProductLoaderTests: XCTestCase {
     
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductLoader, client: HTTPClientSpy) {
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: RemoteProductsLoader, client: HTTPClientSpy) {
         let url = URL(string: "http://any-url")!
         let client = HTTPClientSpy()
-        let sut = RemoteProductLoader(url: url, client: client)
+        let sut = RemoteProductsLoader(url: url, client: client)
         
         trackForMemoryLeak(sut, file: file, line: line)
         trackForMemoryLeak(client, file: file, line: line)
@@ -121,7 +121,7 @@ final class RemoteProductLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func expect(_ sut: RemoteProductLoader, toCompleteWith expectedResult : ProductsLoader.Result, when action: (() -> Void), file: StaticString = #filePath, line: UInt = #line) {
+    func expect(_ sut: RemoteProductsLoader, toCompleteWith expectedResult : ProductsLoader.Result, when action: (() -> Void), file: StaticString = #filePath, line: UInt = #line) {
         
         let exp = expectation(description: "Waiting for load to complete")
         

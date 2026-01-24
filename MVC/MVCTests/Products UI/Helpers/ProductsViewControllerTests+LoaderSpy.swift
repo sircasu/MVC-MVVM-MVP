@@ -20,7 +20,7 @@ class LoaderSpy: ProductsLoader, ProductImageLoader {
     var loadProductCallCount: Int { productRequests.count }
     
     
-    func load(completion: @escaping (Result) -> Void) {
+    func getProducts(completion: @escaping (Result) -> Void) {
         productRequests.append(completion)
     }
     

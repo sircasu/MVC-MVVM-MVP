@@ -26,7 +26,7 @@ public final class ProductRefreshViewController: NSObject {
     
     @objc func refresh() {
         view.beginRefreshing()
-        productsLoader.load { [weak self] result in
+        productsLoader.getProducts { [weak self] result in
             
             switch result {
             case let .success(products):

@@ -1,5 +1,5 @@
 //
-//  RemoteProductLoader.swift
+//  RemoteProductsLoader.swift
 //  Core
 //
 //  Created by Matteo Casu on 24/01/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public final class RemoteProductLoader {
+public final class RemoteProductsLoader: ProductsLoader {
     
     private let url: URL
     private let client: HTTPClient
