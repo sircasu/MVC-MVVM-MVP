@@ -28,6 +28,10 @@ func anyHTTPURLResponse() -> HTTPURLResponse {
     HTTPURLResponse()
 }
 
+func emptyData() -> Data {
+    Data()
+}
+
 func anyData() -> Data {
     Data("any data".utf8)
 }
