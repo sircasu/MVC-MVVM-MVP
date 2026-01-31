@@ -42,7 +42,7 @@ final class RemoteProductLoaderTests: XCTestCase {
         let (sut, client) = makeSUT()
         
         expect(sut, toCompleteWith: .failure(RemoteProductsLoader.Error.connectivity)) {
-            client.completeWithError(NSError(domain: "test", code: 0))
+            client.completeWithError(anyNSError())
         }
     }
 
@@ -82,7 +82,7 @@ final class RemoteProductLoaderTests: XCTestCase {
     
     
     func test_getProducts_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
-        let anyURL = URL(string: "https://any-url.com")!
+        let anyURL = anyURL()
         let client = HTTPClientSpy()
         var sut: RemoteProductsLoader? = RemoteProductsLoader(url: anyURL, client: client)
         
