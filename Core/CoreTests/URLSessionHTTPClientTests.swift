@@ -40,11 +40,11 @@ final class URLSessionHTTPClientTests: XCTestCase {
         URLProtocolStub.startInterceptingRequests()
     }
     
-    
     override func tearDown() {
         super.tearDown()
         URLProtocolStub.stopInterceptingRequests()
     }
+    
     
     func test_performRequest_performRequestWithGivenRequest() {
         
@@ -59,23 +59,20 @@ final class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        let sut = URLSessionHTTPClient()
-        
-        sut.perform(urlRequest) { _ in }
+        makeSUT().perform(urlRequest) { _ in }
         
         wait(for: [exp], timeout: 1)
     }
 
+    
     func test_performRequest_failsOnRequestError() {
         
         let urlRequest = anyRequest()
         let error = anyNSError()
         URLProtocolStub.stub(error: error)
-        
-        let sut = URLSessionHTTPClient()
-        
+
         let exp = expectation(description: "Waiting for completion")
-        sut.perform(urlRequest) { result in
+        makeSUT().perform(urlRequest) { result in
             
             switch result {
             case let .failure(receivedError as NSError):
@@ -95,10 +92,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
         
         URLProtocolStub.stub(data: nil, response: nil, error: nil)
         let urlRequest = anyRequest()
-        let sut = URLSessionHTTPClient()
         
         let exp = expectation(description: "Waiting for completion")
-        sut.perform(urlRequest) { result in
+        makeSUT().perform(urlRequest) { result in
             
             switch result {
             case let .failure(receivedError as NSError):
@@ -113,7 +109,18 @@ final class URLSessionHTTPClientTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    // MARK: Helpers
+    // MARK: - Helpers
+    
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
+        let sut = URLSessionHTTPClient()
+        
+        trackForMemoryLeak(sut, file: file, line: line)
+        
+        return sut
+    }
+    
+    
+    // MARK: URLProtocol subclass
     
     private class URLProtocolStub: URLProtocol {
       
