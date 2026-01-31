@@ -17,5 +17,18 @@ func anyNSError() -> NSError {
 }
 
 func anyRequest() -> URLRequest {
-    return URLRequest(url: anyURL())
+    URLRequest(url: anyURL())
 }
+
+func anyURLResponse() -> URLResponse {
+    URLResponse()
+}
+
+func anyHTTPURLResponse() -> HTTPURLResponse {
+    HTTPURLResponse()
+}
+
+func anyData() -> Data {
+    Data("any data".utf8)
+}
+
