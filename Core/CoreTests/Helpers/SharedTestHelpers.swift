@@ -15,3 +15,7 @@ func anyURL() -> URL {
 func anyNSError() -> NSError {
     NSError(domain: "test", code: 0)
 }
+
+func anyRequest() -> URLRequest {
+    return URLRequest(url: anyURL())
+}
