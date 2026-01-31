@@ -21,9 +21,11 @@ class URLSessionHTTPClient {
     
     func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void ) {
         
-        session.dataTask(with: request) { _, _, error in
+        session.dataTask(with: request) { data, response, error in
             if let error {
                 completion(.failure(error))
+            } else if let data = data, data.count > 0, let response = response as? HTTPURLResponse {
+                completion(.success((data, response)))
             } else {
                 completion(.failure(UnexpectedValueRepresentation()))
             }
@@ -90,6 +92,31 @@ final class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertNotNil(resultErrorFor(data: anyData(), response: anyURLResponse(), error: anyNSError()))
     }
     
+    
+    func test_performRequest_succedsOnHTTPURLResponseWithData() {
+        let response = anyHTTPURLResponse()
+        let data = anyData()
+        URLProtocolStub.stub(data: data, response: response,  error: nil)
+        
+        let exp = expectation(description: "Waiting for completion")
+        
+        makeSUT().perform(anyRequest()) { result in
+            
+            switch result {
+            case let .success((receivedData, receivedResponse)):
+                XCTAssertEqual(receivedData, data)
+                XCTAssertEqual(receivedResponse.url, response.url)
+                XCTAssertEqual(receivedResponse.statusCode, response.statusCode)
+               
+            default: XCTFail("Expected success, got \(result) instead")
+            }
+            
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
@@ -114,7 +141,7 @@ final class URLSessionHTTPClientTests: XCTestCase {
             case let .failure(error):
                 receivedError = error
                
-            default: XCTFail("Expected to fail, got \(result) instead.")
+            default: XCTFail("Expected to fail, got \(result) instead.", file: file, line: line)
             }
             
             exp.fulfill()
