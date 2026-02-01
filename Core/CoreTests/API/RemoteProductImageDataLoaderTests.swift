@@ -34,7 +34,7 @@ final class RemoteProductImageDataLoader {
         }
     }
     
-    
+    @discardableResult
     func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> ImageLoaderTask {
        
         let urlRequest = URLRequest(url: url)
