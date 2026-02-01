@@ -197,4 +197,8 @@ class HTTPClientSpy: HTTPClient {
     func completeWithError(_ error: Error, at index: Int = 0) {
         messages[index].completion(.failure(error))
     }
+    
+    //
+    
+    var requestedURLs = 0
 }
