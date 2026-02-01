@@ -27,7 +27,13 @@ final class RemoteProductImageDataLoader {
         client.perform(urlRequest) { result in
         
             switch result {
-            case .success: completion(.failure(Error.invalidData))
+            case let .success((data, response)):
+                if response.statusCode == 200, !data.isEmpty {
+                    completion(.success(data))
+                } else {
+                    completion(.failure(RemoteProductImageDataLoader.Error.invalidData))
+                }
+                
             case let .failure(error):
                 completion(.failure(error))
             }
@@ -81,12 +87,24 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         }
     }        
     
+    
     func test_loadImageDataFromURL_deliversInvalidDataErrorOn200HTTPStatusCodeWithEmptyData() {
         
         let (sut, client) = makeSUT()
 
         expect(sut, toCompleteWith: .failure(RemoteProductImageDataLoader.Error.invalidData)) {
             client.complete(withStatusCode: 200, data: emptyData())
+        }
+    }
+        
+    
+    func test_loadImageDataFromURL_deliversNonEmptyDataOn200HTTPResponse() {
+        
+        let (sut, client) = makeSUT()
+        let nonEmptyData = anyData()
+        
+        expect(sut, toCompleteWith: .success(nonEmptyData)) {
+            client.complete(withStatusCode: 200, data: nonEmptyData)
         }
     }
     
@@ -110,9 +128,11 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         sut.loadImageData(from: anyURL()) { result in
            
             switch (result, expectedResult) {
+            case let (.success(receivedData), .success(expectedData)):
+                XCTAssertEqual(receivedData, expectedData, file: file, line: line)
             case let (.failure(receivedError as NSError), .failure(expectedError as NSError)):
                 XCTAssertEqual(receivedError, expectedError, file: file, line: line)
-            default: XCTFail("Expected error got \(result) instead", file: file, line: line)
+            default: XCTFail("Expected \(expectedResult) got \(result) instead", file: file, line: line)
             }
             exp.fulfill()
         }
