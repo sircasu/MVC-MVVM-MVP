@@ -22,9 +22,23 @@ final class RemoteProductImageDataLoader {
     }
     
     
-    func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) {
+    private struct HTTPTaskWrapper: ImageLoaderTask {
+        let wrapped: HTTPClientTask
+        
+        init(wrapped: HTTPClientTask) {
+            self.wrapped = wrapped
+        }
+        
+        func cancel() {
+            wrapped.cancel()
+        }
+    }
+    
+    
+    func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> ImageLoaderTask {
+       
         let urlRequest = URLRequest(url: url)
-        client.perform(urlRequest) { [weak self] result in
+        let task = client.perform(urlRequest) { [weak self] result in
             
             guard self != nil else { return }
         
@@ -41,6 +55,8 @@ final class RemoteProductImageDataLoader {
             }
 
         }
+        
+        return HTTPTaskWrapper(wrapped: task)
     }
 }
 

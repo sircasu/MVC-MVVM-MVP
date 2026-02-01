@@ -178,14 +178,19 @@ final class RemoteProductLoaderTests: XCTestCase {
 
 class HTTPClientSpy: HTTPClient {
 
+    private struct Task: HTTPClientTask {
+        func cancel() {}
+    }
+    
     var messages = [(request: URLRequest, completion: (HTTPClient.Result) -> Void)]()
     
     var requests: [URLRequest] {
         messages.map { $0.request }
     }
     
-    func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void) {
+    func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
         messages.append((request, completion))
+        return Task()
     }
     
     func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
@@ -197,8 +202,5 @@ class HTTPClientSpy: HTTPClient {
     func completeWithError(_ error: Error, at index: Int = 0) {
         messages[index].completion(.failure(error))
     }
-    
-    //
-    
-    var requestedURLs = 0
+
 }
