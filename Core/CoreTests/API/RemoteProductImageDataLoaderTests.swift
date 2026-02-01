@@ -24,7 +24,9 @@ final class RemoteProductImageDataLoader {
     
     func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) {
         let urlRequest = URLRequest(url: url)
-        client.perform(urlRequest) { result in
+        client.perform(urlRequest) { [weak self] result in
+            
+            guard self != nil else { return }
         
             switch result {
             case let .success((data, response)):
@@ -106,6 +108,23 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         expect(sut, toCompleteWith: .success(nonEmptyData)) {
             client.complete(withStatusCode: 200, data: nonEmptyData)
         }
+    }
+    
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
+        
+        let anyURL = anyURL()
+        let client = HTTPClientSpy()
+        var sut: RemoteProductImageDataLoader? = RemoteProductImageDataLoader(client: client)
+        
+        var receivedResults = [ProductImageLoader.Result]()
+        sut?.loadImageData(from: anyURL) { receivedResults.append($0) }
+        
+        sut = nil
+        
+        client.complete(withStatusCode: 200, data: anyData())
+        
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     // MARK: - Helpers
