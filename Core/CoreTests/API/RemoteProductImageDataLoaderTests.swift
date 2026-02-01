@@ -16,12 +16,18 @@ final class RemoteProductImageDataLoader {
         self.client = client
     }
     
+    
+    public enum Error: Swift.Error {
+        case invalidData
+    }
+    
+    
     func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) {
         let urlRequest = URLRequest(url: url)
         client.perform(urlRequest) { result in
         
             switch result {
-            case .success : break
+            case .success: completion(.failure(Error.invalidData))
             case let .failure(error):
                 completion(.failure(error))
             }
@@ -57,6 +63,21 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         
         expect(sut, toCompleteWith: .failure(error)) {
             client.completeWithError(error)
+        }
+    }
+        
+    
+    func test_loadImageDataFromURL_deliversInvalidDataErrorOnNon200HTTPStatusCode() {
+        
+        let (sut, client) = makeSUT()
+        
+        let notValidStatusCodes = [199, 201, 300, 400, 500]
+        
+        notValidStatusCodes.enumerated().forEach { (index, code) in
+        
+            expect(sut, toCompleteWith: .failure(RemoteProductImageDataLoader.Error.invalidData)) {
+                client.complete(withStatusCode: code, at: index)
+            }
         }
     }
     
