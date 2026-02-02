@@ -19,6 +19,7 @@ final class RemoteProductImageDataLoader {
     
     public enum Error: Swift.Error {
         case invalidData
+        case connectivity
     }
     
     
@@ -64,8 +65,8 @@ final class RemoteProductImageDataLoader {
                     task.complete(with: .failure(RemoteProductImageDataLoader.Error.invalidData))
                 }
                 
-            case let .failure(error):
-                task.complete(with: .failure(error))
+            case .failure:
+                task.complete(with: .failure(RemoteProductImageDataLoader.Error.connectivity))
             }
 
         }
@@ -94,16 +95,16 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
     }        
     
     
-    func test_loadImageDataFromURL_deliversErrorOnClientError() {
+    func test_loadImageDataFromURL_deliversConnectivityErrorOnClientError() {
         
         let (sut, client) = makeSUT()
         let error = anyNSError()
         
-        expect(sut, toCompleteWith: .failure(error)) {
+        expect(sut, toCompleteWith: .failure(RemoteProductImageDataLoader.Error.connectivity)) {
             client.completeWithError(error)
         }
     }
-        
+    
     
     func test_loadImageDataFromURL_deliversInvalidDataErrorOnNon200HTTPStatusCode() {
         
