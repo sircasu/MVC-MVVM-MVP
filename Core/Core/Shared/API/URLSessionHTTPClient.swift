@@ -11,7 +11,7 @@ final public class URLSessionHTTPClient: HTTPClient {
     
     let session: URLSession
     
-    public init(session: URLSession = .shared) {
+    public init(session: URLSession) {
         self.session = session
     }
     
