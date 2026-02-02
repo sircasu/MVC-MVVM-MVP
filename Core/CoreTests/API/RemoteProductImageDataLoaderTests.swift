@@ -127,6 +127,18 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
     }
     
     
+    func test_cancelLoadImageDataFromURL_cancelsClientURLRequest() {
+        let (sut, client) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImageData(from: url) { _ in }
+        XCTAssertTrue(client.cancelledURLs.isEmpty, "Expected no cancelledURLs until task is cancelled")
+        
+        task.cancel()
+        XCTAssertEqual(client.cancelledURLs, [url], "Expected cancelled URL after task is cancelled")
+    }
+    
+    
     func test_loadImageDataFromURL_doesNotDeliverResultAfterSUTHasBeenDeallocated() {
         
         let anyURL = anyURL()

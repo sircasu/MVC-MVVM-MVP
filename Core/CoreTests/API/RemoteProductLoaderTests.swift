@@ -179,7 +179,10 @@ final class RemoteProductLoaderTests: XCTestCase {
 class HTTPClientSpy: HTTPClient {
 
     private struct Task: HTTPClientTask {
-        func cancel() {}
+        let callback: () -> Void
+        func cancel() {
+            callback()
+        }
     }
     
     var messages = [(request: URLRequest, completion: (HTTPClient.Result) -> Void)]()
@@ -188,9 +191,13 @@ class HTTPClientSpy: HTTPClient {
         messages.map { $0.request }
     }
     
+    var cancelledURLs = [URL]()
+    
     func perform(_ request: URLRequest, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
         messages.append((request, completion))
-        return Task()
+        return Task { [weak self] in
+            self?.cancelledURLs.append(request.url!)
+        }
     }
     
     func complete(withStatusCode code: Int, data: Data = Data(), at index: Int = 0) {
