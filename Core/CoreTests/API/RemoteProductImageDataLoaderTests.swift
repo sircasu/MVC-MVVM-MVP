@@ -10,9 +10,9 @@ import Core
 
 final class RemoteProductImageDataLoader {
     
-    let client: HTTPClientSpy
+    let client: HTTPClient
     
-    init(client: HTTPClientSpy) {
+    init(client: HTTPClient) {
         self.client = client
     }
     
@@ -22,15 +22,26 @@ final class RemoteProductImageDataLoader {
     }
     
     
-    private struct HTTPTaskWrapper: ImageLoaderTask {
-        let wrapped: HTTPClientTask
+    private final class HTTPClientTaskWrapper: ImageLoaderTask {
         
-        init(wrapped: HTTPClientTask) {
-            self.wrapped = wrapped
+        private var completion: ((ProductImageLoader.Result) -> Void)?
+        var wrapped: HTTPClientTask?
+        
+        init(_ completion: @escaping (ProductImageLoader.Result) -> Void) {
+            self.completion = completion
+        }
+        
+        func complete(with result: ProductImageLoader.Result) {
+            completion?(result)
         }
         
         func cancel() {
-            wrapped.cancel()
+            preventFurtherCompletion()
+            wrapped?.cancel()
+        }
+        
+        private func preventFurtherCompletion() {
+            completion = nil
         }
     }
     
@@ -38,25 +49,28 @@ final class RemoteProductImageDataLoader {
     func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> ImageLoaderTask {
        
         let urlRequest = URLRequest(url: url)
-        let task = client.perform(urlRequest) { [weak self] result in
+        
+        let task = HTTPClientTaskWrapper(completion)
+        task.wrapped = client.perform(urlRequest) { [weak self] result in
             
             guard self != nil else { return }
         
             switch result {
             case let .success((data, response)):
                 if response.statusCode == 200, !data.isEmpty {
-                    completion(.success(data))
+
+                    task.complete(with: .success(data))
                 } else {
-                    completion(.failure(RemoteProductImageDataLoader.Error.invalidData))
+                    task.complete(with: .failure(RemoteProductImageDataLoader.Error.invalidData))
                 }
                 
             case let .failure(error):
-                completion(.failure(error))
+                task.complete(with: .failure(error))
             }
 
         }
         
-        return HTTPTaskWrapper(wrapped: task)
+        return task
     }
 }
 
@@ -136,6 +150,21 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         
         task.cancel()
         XCTAssertEqual(client.cancelledURLs, [url], "Expected cancelled URL after task is cancelled")
+    }
+    
+    
+    func test_loadImageDataFromURL_doesNotDeliverResultAfterCancellingTask() {
+        let (sut, client) = makeSUT()
+        
+        var received = [ProductImageLoader.Result]()
+        let task = sut.loadImageData(from: anyURL()) { received.append($0) }
+        task.cancel()
+        
+        client.complete(withStatusCode: 200, data: anyData())
+        client.complete(withStatusCode: 403, data: emptyData())
+        client.completeWithError(anyNSError())
+        
+        XCTAssertTrue(received.isEmpty, "Expected no received results after task is cancelled")
     }
     
     
