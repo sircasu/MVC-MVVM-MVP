@@ -46,7 +46,7 @@ final class RemoteProductImageDataLoader {
         }
     }
     
-    @discardableResult
+    
     func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> ImageLoaderTask {
        
         let urlRequest = URLRequest(url: url)
@@ -89,7 +89,7 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         
         let (sut, client) = makeSUT()
         
-        sut.loadImageData(from: anyURL()) { _ in }
+        _ = sut.loadImageData(from: anyURL()) { _ in }
         
         XCTAssertEqual(client.requests.count, 1)
     }        
@@ -176,7 +176,7 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         var sut: RemoteProductImageDataLoader? = RemoteProductImageDataLoader(client: client)
         
         var receivedResults = [ProductImageLoader.Result]()
-        sut?.loadImageData(from: anyURL) { receivedResults.append($0) }
+        _ = sut?.loadImageData(from: anyURL) { receivedResults.append($0) }
         
         sut = nil
         
@@ -202,7 +202,7 @@ final class RemoteProductImageDataLoaderTests: XCTestCase {
         
         let exp = expectation(description: "Wait for completion")
 
-        sut.loadImageData(from: anyURL()) { result in
+        _ = sut.loadImageData(from: anyURL()) { result in
            
             switch (result, expectedResult) {
             case let (.success(receivedData), .success(expectedData)):
