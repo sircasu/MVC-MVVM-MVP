@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = MVVMViewController()
+        let vc = MVC.TestVC()
         
         
         window?.rootViewController = vc

@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "998FFD0E-EEC6-4409-8798-7D85F1E24101",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testExecutionOrdering" : "random",
+    "threadSanitizerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MVVM.xcodeproj",
+        "identifier" : "855463512F33D661005BBD7B",
+        "name" : "MVVMTests"
+      }
+    }
+  ],
+  "version" : 1
+}

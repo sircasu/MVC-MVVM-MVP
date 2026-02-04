@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class MVVMViewController: UIViewController {
+public final class TestVC: UIViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
