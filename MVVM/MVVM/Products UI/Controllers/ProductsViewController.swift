@@ -11,7 +11,6 @@ import Core
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
     
     public var refreshController: ProductRefreshViewController?
-    private var imageLoader: ProductImageLoader?
     
     
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?

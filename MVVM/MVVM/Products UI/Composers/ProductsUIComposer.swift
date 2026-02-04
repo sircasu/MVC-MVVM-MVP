@@ -15,14 +15,14 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
-        
-        let refreshController = ProductRefreshViewController(productsLoader: productsLoader)
+        let productRefreshViewModel = ProductRefreshViewModel(productsLoader: productsLoader)
+        let refreshController = ProductRefreshViewController(viewModel: productRefreshViewModel)
 
         
         let vc = ProductsViewController(refreshController: refreshController)
         
         
-        refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: imageLoader)
+        productRefreshViewModel.onRefresh = adaptProductToCellController(forwardingTo: vc, with: imageLoader)
         
         
         return vc
