@@ -8,6 +8,9 @@
       location = "group:MVC/MVC.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:MVVM/MVVM.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:mvc-mvvm-mvp.xcodeproj">
    </FileRef>
    <FileRef
