@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Core
 
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
     
