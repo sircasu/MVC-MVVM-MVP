@@ -12,18 +12,66 @@ import Core
 public typealias CellController = UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching
 
 
-public final class ProductCellController: NSObject {
+public class ProductCellControllerViewModel {
+    typealias Observer<T> = (T) -> Void
     
     private var task: ImageLoaderTask?
     private let model: ProductItem
     private let imageLoader: ProductImageLoader
-    private var cell: ProductCell?
     
     public init(model: ProductItem, imageLoader: ProductImageLoader) {
         self.model = model
         self.imageLoader = imageLoader
     }
+    
+    
+    var title: String { model.title }
+    var description: String { model.description }
+    var price: String { model.price.toString }
+    
+    var onImageLoad: Observer<UIImage>?
+    var onImageLoadingStateChange: Observer<Bool>?
+    var onShouldRetryImageLoadStateChange: Observer<Bool>?
+
+    
+    func loadImageData() {
+        onImageLoadingStateChange?(true)
+        onShouldRetryImageLoadStateChange?(false)
+
+        
+        task = imageLoader.loadImageData(from: model.image) { [weak self] result in
+  
+            
+            if let imageData = (try? result.get()).flatMap(UIImage.init) {
+                self?.onImageLoad?(imageData)
+            } else {
+                self?.onShouldRetryImageLoadStateChange?(true)
+            }
+    
+            self?.onImageLoadingStateChange?(false)
+        }
+    }
+    
+    func preload() {
+        loadImageData()
+    }
+    
+    func cancelLoad() {
+        task?.cancel()
+        task = nil
+    }
 }
+
+
+public final class ProductCellController: NSObject {
+    var cell: ProductCell?
+    private let viewModel: ProductCellControllerViewModel
+    
+    public init(viewModel: ProductCellControllerViewModel) {
+        self.viewModel = viewModel
+    }
+}
+
 
 extension ProductCellController: CellController {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -31,60 +79,54 @@ extension ProductCellController: CellController {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = ProductCell()
-        cell.title.text                 = model.title
-        cell.productDescription.text    = model.description
-        cell.price.text                 = model.price.toString
-        cell.productImageView.image     = nil
-        cell.retryButton.isHidden       = true
+        let cell = binded(ProductCell())
 
-        let loadImage = { [weak self, weak cell] in
-            guard let self else { return }
-            
-            cell?.productImageContainer.startShimmering()
-            self.task = self.imageLoader.loadImageData(from: model.image) {
-                [weak cell] result in
+        viewModel.loadImageData()
 
-                let imageData = try? result.get()
-                let image = imageData.map(UIImage.init) ?? nil
-                cell?.productImageView.image = image
-                cell?.retryButton.isHidden = (image != nil)
-        
-                cell?.productImageContainer.stopShimmering()
-            }
-        }
-        
-        loadImage()
-        
-        cell.retryAction = loadImage
-        
-        self.cell = cell
         return cell
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        preload()
+        viewModel.preload()
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        preload()
+        viewModel.preload()
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cancelLoad()
+        viewModel.cancelLoad()
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        cancelLoad()
+        viewModel.cancelLoad()
     }
     
     private func preload() {
-        task = imageLoader.loadImageData(from: model.image) { _ in }
+        viewModel.loadImageData()
     }
     
-    private func cancelLoad() {
-        task?.cancel()
-        cell = nil
-    }
     
+    private func binded(_ cell: ProductCell) -> ProductCell {
+        cell.title.text                 = viewModel.title
+        cell.productDescription.text    = viewModel.description
+        cell.price.text                 = viewModel.price
+        cell.productImageView.image     = nil
+        cell.retryButton.isHidden       = true
+        cell.retryAction                = viewModel.loadImageData
+        
+        viewModel.onImageLoadingStateChange = { [weak cell] isLoading in
+            isLoading ? cell?.productImageContainer.startShimmering() : cell?.productImageContainer.stopShimmering()
+        }
+        
+        viewModel.onImageLoad = { [weak cell] image in
+            cell?.productImageView.image = image
+        }
+        
+        viewModel.onShouldRetryImageLoadStateChange = { [weak cell] shouldRetry in
+            cell?.retryButton.isHidden = !shouldRetry
+        }
+        
+        return cell
+    }
 }

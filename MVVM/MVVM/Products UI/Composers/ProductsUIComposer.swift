@@ -32,9 +32,12 @@ public final class ProductsUIComposer {
     private static func adaptProductToCellController(forwardingTo controller: ProductsViewController, with imageLoader: ProductImageLoader) -> ([ProductItem]) -> Void {
         
          { [weak controller] items in
+             
             controller?.tableModel = items.map { ProductCellController(
-                model: $0,
-                imageLoader: imageLoader
+                viewModel: ProductCellControllerViewModel(
+                    model: $0,
+                    imageLoader: imageLoader
+                )
             )}
         }
     }
