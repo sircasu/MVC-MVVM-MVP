@@ -36,7 +36,8 @@ public final class ProductsUIComposer {
             controller?.tableModel = items.map { ProductCellController(
                 viewModel: ProductCellControllerViewModel(
                     model: $0,
-                    imageLoader: imageLoader
+                    imageLoader: imageLoader,
+                    imageTransformer: UIImage.init
                 )
             )}
         }
