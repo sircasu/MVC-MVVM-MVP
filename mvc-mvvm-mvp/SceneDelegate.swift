@@ -8,6 +8,7 @@
 import UIKit
 import MVC
 import MVVM
+import MVP
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -20,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = MVC.TestVC()
+        let vc = MVP.TestVC()
         
         
         window?.rootViewController = vc

@@ -1,0 +1,27 @@
+{
+  "configurations" : [
+    {
+      "id" : "A6116ABE-9584-48CB-BB61-1129D21F23F8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testExecutionOrdering" : "random",
+    "threadSanitizerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MVP.xcodeproj",
+        "identifier" : "855464332F38CAAC005BBD7B",
+        "name" : "MVPTests"
+      }
+    }
+  ],
+  "version" : 1
+}

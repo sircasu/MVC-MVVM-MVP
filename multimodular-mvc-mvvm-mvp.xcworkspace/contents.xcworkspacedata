@@ -11,6 +11,9 @@
       location = "group:MVVM/MVVM.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:MVP/MVP.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:mvc-mvvm-mvp.xcodeproj">
    </FileRef>
    <FileRef
@@ -21,5 +24,8 @@
    </FileRef>
    <FileRef
       location = "group:MVVMTests.xctestplan">
+   </FileRef>
+   <FileRef
+      location = "group:MVPTests.xctestplan">
    </FileRef>
 </Workspace>

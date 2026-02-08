@@ -11,6 +11,8 @@
 		853A287A2EF84478002F1F63 /* MVC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 853A28782EF84478002F1F63 /* MVC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		855463E12F33D6C2005BBD7B /* MVVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 855463E02F33D6C2005BBD7B /* MVVM.framework */; };
 		855463E22F33D6C2005BBD7B /* MVVM.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 855463E02F33D6C2005BBD7B /* MVVM.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		855465162F38CCEB005BBD7B /* MVP.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 855465152F38CCEB005BBD7B /* MVP.framework */; };
+		855465172F38CCEB005BBD7B /* MVP.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 855465152F38CCEB005BBD7B /* MVP.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +39,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				855465172F38CCEB005BBD7B /* MVP.framework in Embed Frameworks */,
 				855463E22F33D6C2005BBD7B /* MVVM.framework in Embed Frameworks */,
 				853A287A2EF84478002F1F63 /* MVC.framework in Embed Frameworks */,
 			);
@@ -48,6 +51,7 @@
 /* Begin PBXFileReference section */
 		853A28782EF84478002F1F63 /* MVC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MVC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		855463E02F33D6C2005BBD7B /* MVVM.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MVVM.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		855465152F38CCEB005BBD7B /* MVP.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = MVP.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CB02EE58788001AF00E /* mvc-mvvm-mvp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mvc-mvvm-mvp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CC62EE5878A001AF00E /* mvc-mvvm-mvpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		85749CD02EE5878A001AF00E /* mvc-mvvm-mvpUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mvc-mvvm-mvpUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				855465162F38CCEB005BBD7B /* MVP.framework in Frameworks */,
 				855463E12F33D6C2005BBD7B /* MVVM.framework in Frameworks */,
 				853A28792EF84478002F1F63 /* MVC.framework in Frameworks */,
 			);
@@ -135,6 +140,7 @@
 		85749E8A2EE58B92001AF00E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				855465152F38CCEB005BBD7B /* MVP.framework */,
 				855463E02F33D6C2005BBD7B /* MVVM.framework */,
 				853A28782EF84478002F1F63 /* MVC.framework */,
 			);
