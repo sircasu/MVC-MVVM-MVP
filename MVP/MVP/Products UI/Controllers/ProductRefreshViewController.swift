@@ -7,17 +7,21 @@
 
 import UIKit
 
+public protocol ProductRefreshViewControllerDelegate {
+    func didAskForProductsRefresh()
+}
+
 public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
 
     
     public lazy var view: UIRefreshControl = loadView()
     
     
-    private let loadProducts: () -> Void
+    private let delegate: ProductRefreshViewControllerDelegate
     
     
-    public init(loadProducts: @escaping () -> Void) {
-        self.loadProducts = loadProducts
+    public init(delegate: ProductRefreshViewControllerDelegate) {
+        self.delegate = delegate
     }
     
     
@@ -39,6 +43,6 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
     }
     
     @objc func refresh() {
-        loadProducts()
+        delegate.didAskForProductsRefresh()
     }
 }

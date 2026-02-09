@@ -17,7 +17,7 @@ public final class ProductsUIComposer {
         
         let presenter = ProductsPresenter()
         let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: productsLoader, presenter: presenter)
-        let refreshController = ProductRefreshViewController(loadProducts: productsLoaderPresenterAdapter.loadProducts)
+        let refreshController = ProductRefreshViewController(delegate: productsLoaderPresenterAdapter)
         
         let vc = ProductsViewController(refreshController: refreshController)
         
@@ -69,7 +69,7 @@ private class ProductsViewAdapter: ProductsView {
 
 
 
-private class ProductsLoaderPresenterAdapter {
+private class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelegate {
     
     let productsLoader: ProductsLoader
     let presenter: ProductsPresenter
@@ -79,7 +79,7 @@ private class ProductsLoaderPresenterAdapter {
         self.presenter = presenter
     }
     
-    func loadProducts() {
+    func didAskForProductsRefresh() {
         
         presenter.didStartLoading()
         
