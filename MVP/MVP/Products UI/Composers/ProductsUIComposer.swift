@@ -15,31 +15,53 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
-        let productRefreshViewModel = ProductRefreshViewModel(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(viewModel: productRefreshViewModel)
-
+        let presenter = ProductsPresenter(productsLoader: productsLoader)
+        let refreshController = ProductRefreshViewController(presenter: presenter)
         
         let vc = ProductsViewController(refreshController: refreshController)
         
-        
-        productRefreshViewModel.onRefresh = adaptProductToCellController(forwardingTo: vc, with: imageLoader)
-        
-        
+        presenter.loadingView = WeakRefVirtualProxy(refreshController)
+        presenter.productsView = ProductsViewAdapter(controller: vc, imageLoader: imageLoader)
+                
         return vc
     }
+
+}
+
+
+final class WeakRefVirtualProxy<T: AnyObject> {
     
+    weak var object: T?
     
-    private static func adaptProductToCellController(forwardingTo controller: ProductsViewController, with imageLoader: ProductImageLoader) -> ([ProductItem]) -> Void {
-        
-         { [weak controller] items in
-             
-            controller?.tableModel = items.map { ProductCellController(
-                viewModel: ProductCellControllerViewModel(
-                    model: $0,
-                    imageLoader: imageLoader,
-                    imageTransformer: UIImage.init
-                )
-            )}
-        }
+    init(_ object: T?) {
+        self.object = object
+    }
+}
+
+extension WeakRefVirtualProxy: ProductsLoadingView where T: ProductsLoadingView {
+    func display(isLoading: Bool) {
+        object?.display(isLoading: isLoading)
+    }
+}
+
+
+private class ProductsViewAdapter: ProductsView {
+    
+    weak var controller: ProductsViewController?
+    let imageLoader: ProductImageLoader
+    
+    init(controller: ProductsViewController?, imageLoader: ProductImageLoader) {
+        self.controller = controller
+        self.imageLoader = imageLoader
+    }
+    
+    func display(products: [ProductItem]) {
+        controller?.tableModel = products.map { ProductCellController(
+            viewModel: ProductCellControllerViewModel(
+                model: $0,
+                imageLoader: imageLoader,
+                imageTransformer: UIImage.init
+            )
+        )}
     }
 }

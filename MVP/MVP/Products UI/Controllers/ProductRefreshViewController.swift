@@ -7,36 +7,38 @@
 
 import UIKit
 
-public final class ProductRefreshViewController: NSObject {
+public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
+
     
-    public lazy var view: UIRefreshControl = binded(UIRefreshControl())
-    
-    
-    private let viewModel: ProductRefreshViewModel
+    public lazy var view: UIRefreshControl = loadView()
     
     
-    public init(viewModel: ProductRefreshViewModel) {
-        self.viewModel = viewModel
+    private let presenter: ProductsPresenter
+    
+    
+    public init(presenter: ProductsPresenter) {
+        self.presenter = presenter
     }
     
     
-    public func binded(_ view: UIRefreshControl) -> UIRefreshControl {
-        
-        viewModel.onLoadingStateChange = { [weak view] isLoading in
-            if isLoading {
-                view?.beginRefreshing()
-            } else {
-                view?.endRefreshing()
-            }
-        }
-        
+    public func loadView() -> UIRefreshControl {
+
+        let view = UIRefreshControl()
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
         
         return view
     }
-
+    
+    
+    func display(isLoading: Bool) {
+        if isLoading {
+            view.beginRefreshing()
+        } else {
+            view.endRefreshing()
+        }
+    }
     
     @objc func refresh() {
-        viewModel.loadFeed()
+        presenter.loadFeed()
     }
 }

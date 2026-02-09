@@ -33,7 +33,7 @@ extension ProductsViewController {
         refreshControl = fake
         refreshController?.view = fake
         
-        _ = refreshController?.binded(fake)
+//        _ = refreshController?.binded(fake)
     }
     
     
