@@ -16,7 +16,7 @@ public final class ProductsUIComposer {
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
         let presenter = ProductsPresenter(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(presenter: presenter)
+        let refreshController = ProductRefreshViewController(loadProducts: presenter.loadProducts)
         
         let vc = ProductsViewController(refreshController: refreshController)
         

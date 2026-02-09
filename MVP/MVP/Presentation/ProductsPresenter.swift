@@ -33,7 +33,7 @@ final public class ProductsPresenter {
     var productsView: ProductsView?
     
     
-    func loadFeed() {
+    func loadProducts() {
         
         loadingView?.display(ProductsLoadingViewModel(isLoading: true))
         
