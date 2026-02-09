@@ -22,30 +22,21 @@ protocol ProductsView {
 
 final public class ProductsPresenter {
     
-    private let productsLoader: ProductsLoader
-    
-    init(productsLoader: ProductsLoader) {
-        self.productsLoader = productsLoader
-    }
-    
-    
     var loadingView: ProductsLoadingView?
     var productsView: ProductsView?
     
     
-    func loadProducts() {
-        
+    func didStartLoading() {
         loadingView?.display(ProductsLoadingViewModel(isLoading: true))
-        
-        productsLoader.getProducts { [weak self] result in
-
-            switch result {
-            case let .success(products):
-                self?.productsView?.display(products)
-            default: break
-            }
-            self?.loadingView?.display(ProductsLoadingViewModel(isLoading: false))
-        }
+    }
+    
+    func didLoadProdcutsWith(products: [ProductItem]) {
+        loadingView?.display(ProductsLoadingViewModel(isLoading: false))
+        productsView?.display(products)
+    }
+    
+    func didLoadProdcutsWith(error: Error) {
+        loadingView?.display(ProductsLoadingViewModel(isLoading: false))
     }
 
 }

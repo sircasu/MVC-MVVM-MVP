@@ -15,8 +15,9 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
-        let presenter = ProductsPresenter(productsLoader: productsLoader)
-        let refreshController = ProductRefreshViewController(loadProducts: presenter.loadProducts)
+        let presenter = ProductsPresenter()
+        let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: productsLoader, presenter: presenter)
+        let refreshController = ProductRefreshViewController(loadProducts: productsLoaderPresenterAdapter.loadProducts)
         
         let vc = ProductsViewController(refreshController: refreshController)
         
@@ -63,5 +64,35 @@ private class ProductsViewAdapter: ProductsView {
                 imageTransformer: UIImage.init
             )
         )}
+    }
+}
+
+
+
+private class ProductsLoaderPresenterAdapter {
+    
+    let productsLoader: ProductsLoader
+    let presenter: ProductsPresenter
+    
+    init(productsLoader: ProductsLoader, presenter: ProductsPresenter) {
+        self.productsLoader = productsLoader
+        self.presenter = presenter
+    }
+    
+    func loadProducts() {
+        
+        presenter.didStartLoading()
+        
+        productsLoader.getProducts { [weak self] result in
+            
+            guard let self else { return }
+            
+            switch result {
+            case let .success(products):
+                presenter.didLoadProdcutsWith(products: products)
+            case let .failure(error):
+                presenter.didLoadProdcutsWith(error: error)
+            }
+        }
     }
 }
