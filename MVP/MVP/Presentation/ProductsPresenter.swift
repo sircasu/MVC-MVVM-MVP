@@ -8,13 +8,15 @@
 import Foundation
 import Core
 
-
+struct ProductsLoadingViewModel {
+    let isLoading: Bool
+}
 protocol ProductsLoadingView {
-    func display(isLoading: Bool)
+    func display(_ viewModel: ProductsLoadingViewModel)
 }
 
 protocol ProductsView {
-    func display(products: [ProductItem])
+    func display(_ products: [ProductItem])
 }
 
 
@@ -33,16 +35,16 @@ final public class ProductsPresenter {
     
     func loadFeed() {
         
-        loadingView?.display(isLoading: true)
+        loadingView?.display(ProductsLoadingViewModel(isLoading: true))
         
         productsLoader.getProducts { [weak self] result in
 
             switch result {
             case let .success(products):
-                self?.productsView?.display(products: products)
+                self?.productsView?.display(products)
             default: break
             }
-            self?.loadingView?.display(isLoading: false)
+            self?.loadingView?.display(ProductsLoadingViewModel(isLoading: false))
         }
     }
 

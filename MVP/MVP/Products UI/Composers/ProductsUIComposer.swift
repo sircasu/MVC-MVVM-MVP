@@ -39,8 +39,8 @@ final class WeakRefVirtualProxy<T: AnyObject> {
 }
 
 extension WeakRefVirtualProxy: ProductsLoadingView where T: ProductsLoadingView {
-    func display(isLoading: Bool) {
-        object?.display(isLoading: isLoading)
+    func display(_ viewModel: ProductsLoadingViewModel) {
+        object?.display(viewModel)
     }
 }
 
@@ -55,7 +55,7 @@ private class ProductsViewAdapter: ProductsView {
         self.imageLoader = imageLoader
     }
     
-    func display(products: [ProductItem]) {
+    func display(_ products: [ProductItem]) {
         controller?.tableModel = products.map { ProductCellController(
             viewModel: ProductCellControllerViewModel(
                 model: $0,
