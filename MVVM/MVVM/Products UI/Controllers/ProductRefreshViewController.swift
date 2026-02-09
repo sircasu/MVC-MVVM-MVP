@@ -37,6 +37,6 @@ public final class ProductRefreshViewController: NSObject {
 
     
     @objc func refresh() {
-        viewModel.loadFeed()
+        viewModel.loadProducts()
     }
 }

@@ -21,7 +21,7 @@ final public class ProductRefreshViewModel {
     
     var onRefresh: (([ProductItem]) -> Void)?
     
-    func loadFeed() {
+    func loadProducts() {
         onLoadingStateChange?(true)
         
         productsLoader.getProducts { [weak self] result in

@@ -15,15 +15,19 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
-        let presenter = ProductsPresenter()
-        let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: productsLoader, presenter: presenter)
+
+        let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: productsLoader)
         let refreshController = ProductRefreshViewController(delegate: productsLoaderPresenterAdapter)
         
         let vc = ProductsViewController(refreshController: refreshController)
         
-        presenter.loadingView = WeakRefVirtualProxy(refreshController)
-        presenter.productsView = ProductsViewAdapter(controller: vc, imageLoader: imageLoader)
+        let presenter = ProductsPresenter(
+            loadingView: WeakRefVirtualProxy(refreshController),
+            productsView: ProductsViewAdapter(controller: vc, imageLoader: imageLoader)
+        )
                 
+        productsLoaderPresenterAdapter.presenter = presenter
+        
         return vc
     }
 
@@ -72,16 +76,17 @@ private class ProductsViewAdapter: ProductsView {
 private class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelegate {
     
     let productsLoader: ProductsLoader
-    let presenter: ProductsPresenter
+    var presenter: ProductsPresenter?
     
-    init(productsLoader: ProductsLoader, presenter: ProductsPresenter) {
+    
+    init(productsLoader: ProductsLoader) {
         self.productsLoader = productsLoader
-        self.presenter = presenter
     }
+    
     
     func didAskForProductsRefresh() {
         
-        presenter.didStartLoading()
+        presenter?.didStartLoading()
         
         productsLoader.getProducts { [weak self] result in
             
@@ -89,9 +94,9 @@ private class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelega
             
             switch result {
             case let .success(products):
-                presenter.didLoadProdcutsWith(products: products)
+                presenter?.didLoadProdcutsWith(products: products)
             case let .failure(error):
-                presenter.didLoadProdcutsWith(error: error)
+                presenter?.didLoadProdcutsWith(error: error)
             }
         }
     }
