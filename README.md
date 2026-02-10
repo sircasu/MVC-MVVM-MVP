@@ -2,5 +2,5 @@
 
 [✅] MVC module
 [✅] MVVM module
-[🔜] MVP module
+[✅] MVP module
 [🔜] App module
