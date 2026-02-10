@@ -12,71 +12,71 @@ import Core
 public typealias CellController = UITableViewDataSource & UITableViewDelegate & UITableViewDataSourcePrefetching
 
 
+public protocol ProductCellControllerDelegate {
+    func didRequestImage()
+    func didPreloadImageRequest()
+    func didCancelImageRequest()
+    
+}
 
 public final class ProductCellController: NSObject {
-    var cell: ProductCell?
-    private let viewModel: ProductCellControllerViewModel<UIImage>
+    private lazy var cell = ProductCell()
+    private let delegate: ProductCellControllerDelegate
     
-    public init(viewModel: ProductCellControllerViewModel<UIImage>) {
-        self.viewModel = viewModel
+    public init(delegate: ProductCellControllerDelegate) {
+        self.delegate = delegate
     }
 }
 
 
-extension ProductCellController: CellController {
+extension ProductCellController: CellController, ProductImageView {
+
+    
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         1
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = binded(ProductCell())
-
-        viewModel.loadImageData()
-
+ 
+        delegate.didRequestImage()
         return cell
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
-        viewModel.preload()
+
+        delegate.didPreloadImageRequest()
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        viewModel.preload()
+
+        delegate.didPreloadImageRequest()
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        viewModel.cancelLoad()
+
+        delegate.didCancelImageRequest()
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        viewModel.cancelLoad()
+        delegate.didCancelImageRequest()
     }
     
     private func preload() {
-        viewModel.loadImageData()
+        delegate.didPreloadImageRequest()
     }
     
     
-    private func binded(_ cell: ProductCell) -> ProductCell {
+    public func display(_ viewModel: ProductImageViewModel<UIImage>) {
         cell.title.text                 = viewModel.title
         cell.productDescription.text    = viewModel.description
         cell.price.text                 = viewModel.price
-        cell.productImageView.image     = nil
-        cell.retryButton.isHidden       = true
-        cell.retryAction                = viewModel.loadImageData
-        
-        viewModel.onImageLoadingStateChange = { [weak cell] isLoading in
-            isLoading ? cell?.productImageContainer.startShimmering() : cell?.productImageContainer.stopShimmering()
-        }
-        
-        viewModel.onImageLoad = { [weak cell] image in
-            cell?.productImageView.image = image
-        }
-        
-        viewModel.onShouldRetryImageLoadStateChange = { [weak cell] shouldRetry in
-            cell?.retryButton.isHidden = !shouldRetry
-        }
-        
-        return cell
+        cell.retryButton.isHidden       = !viewModel.shouldRetry
+        cell.retryAction                = delegate.didRequestImage
+        cell.productImageView.image     = viewModel.image
+        viewModel.isLoading ?
+            cell.productImageContainer.startShimmering()
+            :
+            cell.productImageContainer.stopShimmering()
     }
+    
 }
