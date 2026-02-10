@@ -60,8 +60,8 @@ private class ProductsViewAdapter: ProductsView {
         self.imageLoader = imageLoader
     }
     
-    func display(_ products: [ProductItem]) {
-        controller?.tableModel = products.map { ProductCellController(
+    func display(_ viewModel: ProductsViewModel) {
+        controller?.tableModel = viewModel.products.map { ProductCellController(
             viewModel: ProductCellControllerViewModel(
                 model: $0,
                 imageLoader: imageLoader,

@@ -15,8 +15,11 @@ protocol ProductsLoadingView {
     func display(_ viewModel: ProductsLoadingViewModel)
 }
 
+struct ProductsViewModel {
+    let products: [ProductItem]
+}
 protocol ProductsView {
-    func display(_ products: [ProductItem])
+    func display(_ viewModel: ProductsViewModel)
 }
 
 
@@ -38,7 +41,7 @@ final public class ProductsPresenter {
     
     func didLoadProdcutsWith(products: [ProductItem]) {
         loadingView.display(ProductsLoadingViewModel(isLoading: false))
-        productsView.display(products)
+        productsView.display(ProductsViewModel(products: products))
     }
     
     func didLoadProdcutsWith(error: Error) {
