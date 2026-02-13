@@ -20,7 +20,7 @@ public protocol ProductCellControllerDelegate {
 }
 
 public final class ProductCellController: NSObject {
-    private lazy var cell = ProductCell()
+    private var cell: ProductCell?
     private let delegate: ProductCellControllerDelegate
     
     public init(delegate: ProductCellControllerDelegate) {
@@ -37,46 +37,54 @@ extension ProductCellController: CellController, ProductImageView {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
- 
+        self.cell = (tableView.dequeueReusableCell(withIdentifier: String(describing: ProductCell.self), for: indexPath) as! ProductCell)
         delegate.didRequestImage()
-        return cell
+        return self.cell!
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
 
-        delegate.didPreloadImageRequest()
+        preload()
     }
     
     public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 
-        delegate.didPreloadImageRequest()
+        preload()
     }
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
-        delegate.didCancelImageRequest()
+        cancelLoad()
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        delegate.didCancelImageRequest()
+        cancelLoad()
     }
+
+    
+    public func display(_ viewModel: ProductImageViewModel<UIImage>) {
+        cell?.title.text                 = viewModel.title
+        cell?.productDescription.text    = viewModel.description
+        cell?.price.text                 = viewModel.price
+        cell?.retryButton.isHidden       = !viewModel.shouldRetry
+        cell?.retryAction                = delegate.didRequestImage
+        cell?.productImageView.image     = viewModel.image
+        viewModel.isLoading ?
+            cell?.productImageContainer.startShimmering()
+            :
+            cell?.productImageContainer.stopShimmering()
+    }
+    
     
     private func preload() {
         delegate.didPreloadImageRequest()
     }
     
-    
-    public func display(_ viewModel: ProductImageViewModel<UIImage>) {
-        cell.title.text                 = viewModel.title
-        cell.productDescription.text    = viewModel.description
-        cell.price.text                 = viewModel.price
-        cell.retryButton.isHidden       = !viewModel.shouldRetry
-        cell.retryAction                = delegate.didRequestImage
-        cell.productImageView.image     = viewModel.image
-        viewModel.isLoading ?
-            cell.productImageContainer.startShimmering()
-            :
-            cell.productImageContainer.stopShimmering()
+    private func cancelLoad() {
+        releaseCellForReuse()
+        delegate.didCancelImageRequest()
     }
     
+    private func releaseCellForReuse() {
+        cell = nil
+    }
 }

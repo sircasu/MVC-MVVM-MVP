@@ -332,6 +332,22 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product0.image, product1.image, product1.image], "Expected two new image URL request after second view becomes visible again")
     }
     
+    
+    func test_productView_doesNotRenderImageWhenNotVisibleAnymore() {
+        
+        let (sut, loader) = makeSUT()
+
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct()], at: 0)
+        
+        let view = sut.simulateProductImageNotVisible(at: 0)
+        
+        loader.completeImageLoading(with: UIImage.make(withColor: .red).pngData()!)
+        
+        XCTAssertNil(view?.renderedImage)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {

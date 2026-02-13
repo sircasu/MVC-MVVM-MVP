@@ -31,35 +31,34 @@ extension ProductCellController: CellController {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = ProductCell()
-        cell.title.text                 = model.title
-        cell.productDescription.text    = model.description
-        cell.price.text                 = model.price.toString
-        cell.productImageView.image     = nil
-        cell.retryButton.isHidden       = true
+        self.cell = (tableView.dequeueReusableCell(withIdentifier: String(describing: ProductCell.self), for: indexPath) as! ProductCell)
+        cell?.title.text                 = model.title
+        cell?.productDescription.text    = model.description
+        cell?.price.text                 = model.price.toString
+        cell?.productImageView.image     = nil
+        cell?.retryButton.isHidden       = true
 
-        let loadImage = { [weak self, weak cell] in
+        let loadImage = { [weak self] in
             guard let self else { return }
             
-            cell?.productImageContainer.startShimmering()
+            self.cell?.productImageContainer.startShimmering()
             self.task = self.imageLoader.loadImageData(from: model.image) {
-                [weak cell] result in
+                [weak self] result in
 
                 let imageData = try? result.get()
                 let image = imageData.map(UIImage.init) ?? nil
-                cell?.productImageView.image = image
-                cell?.retryButton.isHidden = (image != nil)
+                self?.cell?.productImageView.image = image
+                self?.cell?.retryButton.isHidden = (image != nil)
         
-                cell?.productImageContainer.stopShimmering()
+                self?.cell?.productImageContainer.stopShimmering()
             }
         }
         
         loadImage()
         
-        cell.retryAction = loadImage
+        cell?.retryAction = loadImage
         
-        self.cell = cell
-        return cell
+        return cell!
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -83,8 +82,11 @@ extension ProductCellController: CellController {
     }
     
     private func cancelLoad() {
+        releaseCellForReuse()
         task?.cancel()
-        cell = nil
     }
     
+    private func releaseCellForReuse() {
+        cell = nil
+    }
 }
