@@ -345,7 +345,7 @@ class ProductsViewControllerTests: XCTestCase {
         
         loader.completeImageLoading(with: UIImage.make(withColor: .red).pngData()!)
         
-        XCTAssertNil(view?.renderedImage)
+        XCTAssertNil(view?.renderedImage, "Expected no rendered image when an image load finishes after the view is not visible anymore")
     }
     
     // MARK: - Helpers

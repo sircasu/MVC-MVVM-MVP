@@ -69,7 +69,7 @@ extension ProductCellController: CellController {
     
     private func bind(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> ProductCell? {
 
-        cell = (tableView.dequeueReusableCell(withIdentifier: String(describing: ProductCell.self), for: indexPath) as! ProductCell)
+        cell = tableView.dequeueReusableCell()
         cell?.title.text                 = viewModel.title
         cell?.productDescription.text    = viewModel.description
         cell?.price.text                 = viewModel.price

@@ -31,7 +31,7 @@ extension ProductCellController: CellController {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        self.cell = (tableView.dequeueReusableCell(withIdentifier: String(describing: ProductCell.self), for: indexPath) as! ProductCell)
+        self.cell = tableView.dequeueReusableCell()
         cell?.title.text                 = model.title
         cell?.productDescription.text    = model.description
         cell?.price.text                 = model.price.toString
