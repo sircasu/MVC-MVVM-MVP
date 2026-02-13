@@ -8,14 +8,7 @@
 import Foundation
 import Core
 
-public struct ProductImageViewModel<Image> {
-    let title: String
-    let description: String
-    let price: String
-    var image: Image?
-    var isLoading: Bool
-    var shouldRetry: Bool
-}
+
 
 public protocol ProductImageView {
     associatedtype Image
