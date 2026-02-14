@@ -47,7 +47,7 @@ extension ProductCellController: CellController {
 
                 let imageData = try? result.get()
                 let image = imageData.map(UIImage.init) ?? nil
-                self?.cell?.productImageView.image = image
+                self?.cell?.productImageView.setImageAnimated(image)
                 self?.cell?.retryButton.isHidden = (image != nil)
         
                 self?.cell?.productImageContainer.stopShimmering()

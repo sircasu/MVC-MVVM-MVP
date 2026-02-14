@@ -68,6 +68,8 @@ extension ProductCellController: CellController, ProductImageView {
         cell?.retryButton.isHidden       = !viewModel.shouldRetry
         cell?.retryAction                = delegate.didRequestImage
         cell?.productImageView.image     = viewModel.image
+        cell?.productImageView.setImageAnimated(viewModel.image)
+
         viewModel.isLoading ?
             cell?.productImageContainer.startShimmering()
             :

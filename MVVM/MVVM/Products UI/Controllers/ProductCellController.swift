@@ -82,7 +82,7 @@ extension ProductCellController: CellController {
         }
         
         viewModel.onImageLoad = { [weak self] image in
-            self?.cell?.productImageView.image = image
+            self?.cell?.productImageView.setImageAnimated(image)
         }
         
         viewModel.onShouldRetryImageLoadStateChange = { [weak self] shouldRetry in
