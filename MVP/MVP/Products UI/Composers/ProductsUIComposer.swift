@@ -38,38 +38,7 @@ public final class ProductsUIComposer {
 }
 
 
-private class ProductsViewAdapter: ProductsView {
-    
-    weak var controller: ProductsViewController?
-    let imageLoader: ProductImageLoader
-    
-    init(controller: ProductsViewController?, imageLoader: ProductImageLoader) {
-        self.controller = controller
-        self.imageLoader = imageLoader
-    }
-    
 
-    func display(_ viewModel: ProductsViewModel) {
-        
-
-        controller?.tableModel = viewModel.products.map { model in
-            let adapter = ProductImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<ProductCellController>, UIImage>(
-                model: model,
-                imageLoader: imageLoader
-            )
-            
-            let view = ProductCellController(delegate: adapter)
-            
-            adapter.presenter = ProductImagePresenter(
-                productImageView: WeakRefVirtualProxy(view),
-                imageTransformer: UIImage.init)
-            
-            return view
-
-        }
-
-    }
-}
 
 
 
@@ -104,7 +73,7 @@ private class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelega
 
 
 
-private final class ProductImageDataLoaderPresentationAdapter<View: ProductImageView, Image>: ProductCellControllerDelegate where View.Image == Image {
+public final class ProductImageDataLoaderPresentationAdapter<View: ProductImageView, Image>: ProductCellControllerDelegate where View.Image == Image {
     
     let model: ProductItem
     let imageLoader: ProductImageLoader
@@ -112,12 +81,12 @@ private final class ProductImageDataLoaderPresentationAdapter<View: ProductImage
     
     var presenter: ProductImagePresenter<View, Image>?
     
-    init(model: ProductItem, imageLoader: ProductImageLoader) {
+    public init(model: ProductItem, imageLoader: ProductImageLoader) {
         self.model = model
         self.imageLoader = imageLoader
     }
     
-    func didRequestImage() {
+    public func didRequestImage() {
 
         presenter?.didStartLoadingProduct(for: model)
 
@@ -134,11 +103,11 @@ private final class ProductImageDataLoaderPresentationAdapter<View: ProductImage
         }
     }
 
-    func didPreloadImageRequest() {
+    public func didPreloadImageRequest() {
         didRequestImage()
     }
 
-    func didCancelImageRequest() {
+    public func didCancelImageRequest() {
         task?.cancel()
         task = nil
     }
