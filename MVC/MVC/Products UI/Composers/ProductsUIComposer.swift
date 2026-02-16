@@ -16,13 +16,13 @@ public final class ProductsUIComposer {
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
         
-        let refreshController = ProductRefreshViewController(productsLoader: productsLoader)
+        let refreshController = ProductRefreshViewController(productsLoader: MainQueueDispatchDecorator(decoratee: productsLoader))
 
         
         let vc = ProductsViewController(refreshController: refreshController)
         
         
-        refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: imageLoader)
+        refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: MainQueueDispatchDecorator(decoratee: imageLoader))
         
         
         return vc
@@ -36,6 +36,46 @@ public final class ProductsUIComposer {
                 model: $0,
                 imageLoader: imageLoader
             )}
+        }
+    }
+}
+
+
+final class MainQueueDispatchDecorator<T> {
+
+    let decoratee: T
+
+    init(decoratee: T) {
+        self.decoratee = decoratee
+    }
+
+    func dispatch(completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            return DispatchQueue.main.async(execute: completion)
+        }
+
+        completion()
+    }
+}
+
+
+extension MainQueueDispatchDecorator: ProductsLoader where T == ProductsLoader {
+
+    func getProducts(completion: @escaping (ProductsLoader.Result) -> Void) {
+
+        decoratee.getProducts { [weak self] result in
+            self?.dispatch { completion(result) }
+        }
+    }
+
+}
+
+extension MainQueueDispatchDecorator: ProductImageLoader where T == ProductImageLoader {
+
+    func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> any ImageLoaderTask {
+
+        decoratee.loadImageData(from: url) { [weak self] result in
+            self?.dispatch { completion(result) }
         }
     }
 }

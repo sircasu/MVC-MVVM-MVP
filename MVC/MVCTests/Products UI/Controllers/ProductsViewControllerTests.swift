@@ -348,6 +348,41 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertNil(view?.renderedImage, "Expected no rendered image when an image load finishes after the view is not visible anymore")
     }
     
+    
+    func test_loadProductsCompletion_dispatchesFromBackgroundToMainThread() {
+        
+        let (sut, loader) = makeSUT()
+
+        sut.simulateAppearance()
+        
+        let exp = expectation(description: "Waiting for backgrond queue")
+        DispatchQueue.global().async {
+            loader.completesProductsLoading(at: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    
+    func test_loadImageDataCompletion_dispatchesFromBackgroundToMainThread() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        loader.completesProductsLoading(with: [makeProduct()])
+        _ = sut.simulateProductImageBeginVisible(at: 0)
+        
+        let imageData = UIImage.make(withColor: UIColor.red).pngData()!
+        
+        let exp = expectation(description: "Waiting for backgrond queue")
+        DispatchQueue.global().async {
+            loader.completeImageLoading(with: imageData, at: 0)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsViewController, loader: LoaderSpy) {

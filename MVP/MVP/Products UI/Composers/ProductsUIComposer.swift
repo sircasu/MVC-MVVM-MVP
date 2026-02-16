@@ -15,8 +15,8 @@ public final class ProductsUIComposer {
     
     public static func makeProductsUI(productsLoader: ProductsLoader, imageLoader: ProductImageLoader) -> ProductsViewController {
         
-
-        let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: productsLoader)
+        
+        let productsLoaderPresenterAdapter = ProductsLoaderPresenterAdapter(productsLoader: MainQueueDispatchDecorator(decoratee: productsLoader))
                 
         let refreshController = ProductRefreshViewController(delegate: productsLoaderPresenterAdapter)
         
@@ -24,7 +24,10 @@ public final class ProductsUIComposer {
         
         let presenter = ProductsPresenter(
             loadingView: WeakRefVirtualProxy(refreshController),
-            productsView: ProductsViewAdapter(controller: vc, imageLoader: imageLoader)
+            productsView: ProductsViewAdapter(
+                controller: vc,
+                imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader)
+            )
         )
                 
         productsLoaderPresenterAdapter.presenter = presenter
@@ -32,6 +35,45 @@ public final class ProductsUIComposer {
         return vc
     }
 
+}
+
+final class MainQueueDispatchDecorator<T> {
+
+    let decoratee: T
+
+    init(decoratee: T) {
+        self.decoratee = decoratee
+    }
+
+    func dispatch(completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            return DispatchQueue.main.async(execute: completion)
+        }
+
+        completion()
+    }
+}
+
+
+extension MainQueueDispatchDecorator: ProductsLoader where T == ProductsLoader {
+
+    func getProducts(completion: @escaping (ProductsLoader.Result) -> Void) {
+
+        decoratee.getProducts { [weak self] result in
+            self?.dispatch { completion(result) }
+        }
+    }
+
+}
+
+extension MainQueueDispatchDecorator: ProductImageLoader where T == ProductImageLoader {
+
+    func loadImageData(from url: URL, completion: @escaping (ProductImageLoader.Result) -> Void) -> any ImageLoaderTask {
+
+        decoratee.loadImageData(from: url) { [weak self] result in
+            self?.dispatch { completion(result) }
+        }
+    }
 }
 
 
