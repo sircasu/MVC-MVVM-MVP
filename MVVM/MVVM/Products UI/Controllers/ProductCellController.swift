@@ -64,6 +64,7 @@ extension ProductCellController: CellController {
     }
     
     private func releaseCellForReuse() {
+        cell?.onReuse = nil
         cell = nil
     }
     

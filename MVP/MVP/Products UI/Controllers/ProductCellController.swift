@@ -91,6 +91,7 @@ extension ProductCellController: CellController, ProductImageView {
     }
     
     private func releaseCellForReuse() {
+        cell?.onReuse = nil
         cell = nil
     }
 }

@@ -353,6 +353,32 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(view0.renderedImage, .none, "Expected no image state change for reused view once image loading completes successfully")
     }
     
+    
+    func test_productView_showsDataForNewViewRequestAfterPreviousViewIsReused() {
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()])
+        
+        guard let previousView = sut.simulateProductImageNotVisible(at: 0) else {
+            XCTFail("Expected previousView to not be nil")
+            return
+        }
+        
+        guard let newView = sut.simulateProductImageBeginVisible(at: 0)
+            else {
+                XCTFail("Expexted new view to not be nil")
+                return
+            }
+        previousView.prepareForReuse()
+        
+        let imageData = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(with: imageData, at: 1)
+        
+        XCTAssertEqual(newView.renderedImage, imageData)
+    }
+    
+    
     func test_productView_doesNotRenderImageWhenNotVisibleAnymore() {
         
         let (sut, loader) = makeSUT()
