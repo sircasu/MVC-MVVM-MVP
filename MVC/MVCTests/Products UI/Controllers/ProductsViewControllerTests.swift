@@ -132,7 +132,8 @@ class ProductsViewControllerTests: XCTestCase {
         sut.simulateProductImageBeginVisible(at: 1)
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product1.image], "Expected second image URL request once second view become visible")
     }
-        
+    
+    
     
     func test_productView_cancelImageLoadingWhenNotVisibleAnymore() {
         
@@ -332,6 +333,25 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedImageURLs, [product0.image, product0.image, product1.image, product1.image], "Expected two new image URL request after second view becomes visible again")
     }
     
+    
+    func test_productView_doesNotShowDataFromPreviousRequestWhenCellIsReused() {
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()])
+        
+        guard let view0 = sut.simulateProductImageBeginVisible(at: 0) else {
+            XCTFail("Expected view to not be nil")
+            return
+        }
+        view0.prepareForReuse()
+        
+        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+        
+        XCTAssertEqual(view0.renderedImage, .none, "Expected no image state change for reused view once image loading completes successfully")
+    }
     
     func test_productView_doesNotRenderImageWhenNotVisibleAnymore() {
         

@@ -23,6 +23,14 @@ public final class ProductCell: UITableViewCell {
     
     
     var retryAction: (() -> Void)?
+    var onReuse: (() -> Void)?
+    
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        onReuse?()
+    }
 
     
     @objc private func retryButtonTapped() {

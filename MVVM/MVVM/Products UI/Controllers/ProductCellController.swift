@@ -77,6 +77,10 @@ extension ProductCellController: CellController {
         cell?.retryButton.isHidden       = true
         cell?.retryAction                = viewModel.loadImageData
         
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
+        
         viewModel.onImageLoadingStateChange = { [weak self] isLoading in
             isLoading ? self?.cell?.productImageContainer.startShimmering() : self?.cell?.productImageContainer.stopShimmering()
         }

@@ -333,6 +333,26 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_productView_doesNotShowDataFromPreviousRequestWhenCellIsReused() {
+        
+        let (sut, loader) = makeSUT()
+        
+        sut.simulateAppearance()
+        loader.completesProductsLoading(with: [makeProduct(), makeProduct()])
+        
+        guard let view0 = sut.simulateProductImageBeginVisible(at: 0) else {
+            XCTFail("Expected view to not be nil")
+            return
+        }
+        view0.prepareForReuse()
+        
+        let imageData0 = UIImage.make(withColor: .red).pngData()!
+        loader.completeImageLoading(with: imageData0, at: 0)
+        
+        XCTAssertEqual(view0.renderedImage, .none, "Expected no image state change for reused view once image loading completes successfully")
+    }
+    
+    
     func test_productView_doesNotRenderImageWhenNotVisibleAnymore() {
         
         let (sut, loader) = makeSUT()

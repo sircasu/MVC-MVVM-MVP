@@ -69,6 +69,10 @@ extension ProductCellController: CellController, ProductImageView {
         cell?.retryAction                = delegate.didRequestImage
         cell?.productImageView.image     = viewModel.image
         cell?.productImageView.setImageAnimated(viewModel.image)
+        
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
 
         viewModel.isLoading ?
             cell?.productImageContainer.startShimmering()

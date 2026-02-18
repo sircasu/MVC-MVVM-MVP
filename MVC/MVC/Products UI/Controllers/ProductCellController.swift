@@ -32,11 +32,12 @@ extension ProductCellController: CellController {
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         self.cell = tableView.dequeueReusableCell()
-        cell?.title.text                 = model.title
-        cell?.productDescription.text    = model.description
-        cell?.price.text                 = model.price.toString
-        cell?.productImageView.image     = nil
-        cell?.retryButton.isHidden       = true
+        self.cell?.title.text                 = model.title
+        self.cell?.productDescription.text    = model.description
+        self.cell?.price.text                 = model.price.toString
+        self.cell?.productImageView.image     = nil
+        self.cell?.retryButton.isHidden       = true
+
 
         let loadImage = { [weak self] in
             guard let self else { return }
@@ -57,6 +58,9 @@ extension ProductCellController: CellController {
         loadImage()
         
         cell?.retryAction = loadImage
+        cell?.onReuse = { [weak self] in
+            self?.releaseCellForReuse()
+        }
         
         return cell!
     }
