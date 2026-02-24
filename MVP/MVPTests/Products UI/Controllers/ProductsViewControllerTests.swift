@@ -23,8 +23,6 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.title, localizedValue)
     }
     
-
-    
     
     func test_loadProductsAction_requestProductsFromLoader() {
         
