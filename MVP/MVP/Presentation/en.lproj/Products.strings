@@ -1,1 +1,2 @@
 "PRODUCTS_VIEW_TITLE" = "Products";
+"PRODUCTS_VIEW_CONNECTION_ERROR" = "Could not connect to server";
