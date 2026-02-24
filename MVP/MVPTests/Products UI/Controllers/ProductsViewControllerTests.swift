@@ -12,6 +12,14 @@ import MVP
 
 class ProductsViewControllerTests: XCTestCase {
     
+    func test_productViewController_hasTitle() {
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(sut.title, "Products")
+    }
+    
     func test_loadProductsAction_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
