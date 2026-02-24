@@ -29,7 +29,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Products"
+        
         tableView.register(ProductCell.self, forCellReuseIdentifier: String(describing: ProductCell.self))
         tableView.prefetchDataSource = self
         refreshControl = refreshController?.view

@@ -21,6 +21,7 @@ public final class ProductsUIComposer {
         let refreshController = ProductRefreshViewController(delegate: productsLoaderPresenterAdapter)
         
         let vc = ProductsViewController(refreshController: refreshController)
+        vc.title = ProductsPresenter.title
         
         let presenter = ProductsPresenter(
             loadingView: WeakRefVirtualProxy(refreshController),

@@ -24,6 +24,7 @@ final public class ProductsPresenter {
     var loadingView: ProductsLoadingView
     var productsView: ProductsView
     
+    static var title: String = "Products"
     
     init(loadingView: ProductsLoadingView, productsView: ProductsView) {
         self.loadingView = loadingView
