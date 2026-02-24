@@ -24,7 +24,9 @@ final public class ProductsPresenter {
     var loadingView: ProductsLoadingView
     var productsView: ProductsView
     
-    static var title: String = "Products"
+    static var title: String {
+        return NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsPresenter.self), comment: "Title for the product view")
+    }
     
     init(loadingView: ProductsLoadingView, productsView: ProductsView) {
         self.loadingView = loadingView
