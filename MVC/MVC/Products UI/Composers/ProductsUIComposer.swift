@@ -20,7 +20,7 @@ public final class ProductsUIComposer {
 
         
         let vc = ProductsViewController(refreshController: refreshController)
-        
+        vc.title = NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsViewController.self), comment: "Title for the product view")
         
         refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: MainQueueDispatchDecorator(decoratee: imageLoader))
         

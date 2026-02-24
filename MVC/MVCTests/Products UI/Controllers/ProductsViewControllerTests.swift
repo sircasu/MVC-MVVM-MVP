@@ -12,6 +12,17 @@ import MVC
 
 class ProductsViewControllerTests: XCTestCase {
     
+    func test_productViewController_hasTitle() {
+        let (sut, _) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        
+        let localizedKey = "PRODUCTS_VIEW_TITLE"
+        let localizedValue = localized(localizedKey)
+
+        XCTAssertEqual(sut.title, localizedValue)
+    }
+    
     func test_loadProductsAction_requestProductsFromLoader() {
         
         let (sut, loader) = makeSUT()
