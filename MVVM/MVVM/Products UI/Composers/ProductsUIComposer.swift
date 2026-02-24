@@ -20,7 +20,7 @@ public final class ProductsUIComposer {
 
         
         let vc = ProductsViewController(refreshController: refreshController)
-        
+        vc.title = ProductsViewModel.title
         
         productRefreshViewModel.onRefresh = adaptProductToCellController(forwardingTo: vc, with: MainQueueDispatchDecorator(decoratee: imageLoader))
         
