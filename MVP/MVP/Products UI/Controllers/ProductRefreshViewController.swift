@@ -11,7 +11,7 @@ public protocol ProductRefreshViewControllerDelegate {
     func didAskForProductsRefresh()
 }
 
-public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
+public final class ProductRefreshViewController: NSObject {
 
     
     public lazy var view: UIRefreshControl = loadView()
@@ -33,14 +33,6 @@ public final class ProductRefreshViewController: NSObject, ProductsLoadingView {
         return view
     }
     
-    
-    func display(_ viewModel: ProductsLoadingViewModel) {
-        if viewModel.isLoading {
-            view.beginRefreshing()
-        } else {
-            view.endRefreshing()
-        }
-    }
     
     @objc func refresh() {
         delegate.didAskForProductsRefresh()

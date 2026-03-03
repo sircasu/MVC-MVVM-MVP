@@ -13,7 +13,7 @@ public class ErrorView {
 }
 
 
-public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching, ProductsErrorView {
+public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching, ProductsLoadingView, ProductsErrorView {
     
     public var errorView = ErrorView()
     
@@ -56,6 +56,15 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
         onViewIsAppearing?(self)
     }
     
+    
+    
+    func display(_ viewModel: ProductsLoadingViewModel) {
+        if viewModel.isLoading {
+            refreshControl?.beginRefreshing()
+        } else {
+            refreshControl?.endRefreshing()
+        }
+    }
     
     
     func display(_ viewModel: ProductsErrorViewModel) {

@@ -24,7 +24,7 @@ public final class ProductsUIComposer {
         vc.title = ProductsPresenter.title
         
         let presenter = ProductsPresenter(
-            loadingView: WeakRefVirtualProxy(refreshController),
+            loadingView: WeakRefVirtualProxy(vc),
             productsView: ProductsViewAdapter(
                 controller: vc,
                 imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader)
