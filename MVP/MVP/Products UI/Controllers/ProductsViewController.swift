@@ -7,7 +7,15 @@
 
 import UIKit
 
+
+public class ErrorView {
+    public var message: String?
+}
+
+
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
+    
+    public var errorView = ErrorView()
     
     public var refreshController: ProductRefreshViewController?
     
