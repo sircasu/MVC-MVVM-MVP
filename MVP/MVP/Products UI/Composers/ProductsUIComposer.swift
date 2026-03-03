@@ -28,7 +28,8 @@ public final class ProductsUIComposer {
             productsView: ProductsViewAdapter(
                 controller: vc,
                 imageLoader: MainQueueDispatchDecorator(decoratee: imageLoader)
-            )
+            ),
+            errorView: WeakRefVirtualProxy(vc)
         )
                 
         productsLoaderPresenterAdapter.presenter = presenter

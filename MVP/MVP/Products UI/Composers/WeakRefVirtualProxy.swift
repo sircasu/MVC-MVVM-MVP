@@ -29,3 +29,10 @@ extension WeakRefVirtualProxy: ProductImageView where T: ProductImageView, T.Ima
     }
 }
 
+
+extension WeakRefVirtualProxy: ProductsErrorView where T: ProductsErrorView {
+    func display(_ model: ProductsErrorViewModel) {
+        object?.display(model)
+    }
+}
+

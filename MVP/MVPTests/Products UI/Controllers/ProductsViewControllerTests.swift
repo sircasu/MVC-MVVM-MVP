@@ -133,6 +133,17 @@ class ProductsViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.errorMessage, nil)
     }
     
+        
+    
+    func test_loadProductsCompletion_showErrorOnLoadError() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completesProductsLoadingWithError()
+        
+        XCTAssertNotNil(sut.errorMessage)
+    }
+    
     
     func test_productView_loadsImageURLWhenVisible() {
         

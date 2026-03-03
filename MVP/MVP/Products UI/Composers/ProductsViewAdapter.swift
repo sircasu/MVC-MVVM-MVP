@@ -10,6 +10,7 @@ import Core
 
 public class ProductsViewAdapter: ProductsView {
     
+    
     weak var controller: ProductsViewController?
     let imageLoader: ProductImageLoader
     
@@ -39,4 +40,5 @@ public class ProductsViewAdapter: ProductsView {
         }
 
     }
+
 }
