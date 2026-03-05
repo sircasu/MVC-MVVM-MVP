@@ -8,9 +8,6 @@
 import UIKit
 
 
-public class ErrorView {
-    public var message: String?
-}
 
 
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching, ProductsLoadingView, ProductsErrorView {
