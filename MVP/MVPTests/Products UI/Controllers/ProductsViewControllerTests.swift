@@ -145,6 +145,17 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_errorView_hidesErrorOnReload() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completesProductsLoadingWithError()
+        
+        sut.simulateUserInitiatedReload()
+        
+        XCTAssertNil(sut.errorMessage)
+    }
+    
     func test_productView_loadsImageURLWhenVisible() {
         
         let product0 = makeProduct(image: URL(string: "https://any-url-0.com")!)

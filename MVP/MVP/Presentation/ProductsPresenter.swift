@@ -10,7 +10,7 @@ import Core
 
 
 struct ProductsErrorViewModel {
-    let message: String
+    let message: String?
 }
 
 protocol ProductsErrorView {
@@ -47,6 +47,7 @@ final public class ProductsPresenter {
     
     func didStartLoading() {
         loadingView.display(ProductsLoadingViewModel(isLoading: true))
+        errorView.display(ProductsErrorViewModel(message: nil))
     }
     
     func didLoadProdcutsWith(products: [ProductItem]) {
