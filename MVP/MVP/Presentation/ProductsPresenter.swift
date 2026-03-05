@@ -38,6 +38,13 @@ final public class ProductsPresenter {
         return NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsPresenter.self), comment: "Title for the product view")
     }
     
+    private var productsLoadError: String {
+        return NSLocalizedString("PRODUCTS_VIEW_CONNECTION_ERROR",
+             tableName: "Products",
+             bundle: Bundle(for: ProductsPresenter.self),
+             comment: "Error message displayed when we can't load products from the server")
+    }
+    
     init(loadingView: ProductsLoadingView, productsView: ProductsView, errorView: ProductsErrorView) {
         self.loadingView = loadingView
         self.productsView = productsView
@@ -57,7 +64,7 @@ final public class ProductsPresenter {
     
     func didLoadProdcutsWith(error: Error) {
         loadingView.display(ProductsLoadingViewModel(isLoading: false))
-        errorView.display(ProductsErrorViewModel(message: "error"))
+        errorView.display(ProductsErrorViewModel(message: productsLoadError))
     }
 
 }

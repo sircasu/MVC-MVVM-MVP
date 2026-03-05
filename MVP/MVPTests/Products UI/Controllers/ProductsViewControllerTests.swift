@@ -142,6 +142,7 @@ class ProductsViewControllerTests: XCTestCase {
         loader.completesProductsLoadingWithError()
         
         XCTAssertNotNil(sut.errorMessage)
+        XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
     }
     
     
