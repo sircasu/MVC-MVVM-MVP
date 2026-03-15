@@ -49,6 +49,10 @@ class ProductsPresenter {
     private let errorView: ProductsErrorView
     
     
+    static var title: String {
+        return NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsPresenter.self), comment: "Title for the product view")
+    }
+    
     private var productsLoadError: String {
         return NSLocalizedString("PRODUCTS_VIEW_CONNECTION_ERROR",
              tableName: "Products",
@@ -80,6 +84,11 @@ class ProductsPresenter {
 }
 
 final class ProductsPresenterTests: XCTestCase {
+    
+    func test_title_isLocalized() {
+        XCTAssertEqual(ProductsPresenter.title, localized("PRODUCTS_VIEW_TITLE"))
+    }
+    
     
     func test_init_doesNotSendMessagesToView() {
   
