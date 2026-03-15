@@ -19,15 +19,30 @@ protocol ProductsErrorView {
     func display(_ viewModel: ProductsErrorViewModel)
 }
 
+
+protocol ProductsLoadingView {
+    func display(_ viewModel: ProductsLoadingViewModel)
+}
+
+struct ProductsLoadingViewModel {
+    let isLoading: Bool
+}
+
+
+
 class ProductsPresenter {
+    
+    private var loadingView: ProductsLoadingView
     private let errorView: ProductsErrorView
     
-    init(errorView: ProductsErrorView) {
-        self.errorView = errorView
+    init(loadingView: ProductsLoadingView, errorView: ProductsErrorView) {
+        self.loadingView    = loadingView
+        self.errorView      = errorView
     }
     
     func didStartLoading() {
         errorView.display(.noError)
+        loadingView.display(ProductsLoadingViewModel(isLoading: true))
     }
 }
 
@@ -41,13 +56,16 @@ final class ProductsPresenterTests: XCTestCase {
     }
     
     
-    func test_didStartLoading_displayNoErrorMessage() {
+    func test_didStartLoading_displaysNoErrorMessageAndIsLoadingMessage() {
         
         let (sut, view) = makeSUT()
         
         sut.didStartLoading()
         
-        XCTAssertEqual(view.messages, [.display(errorMessage: .none)])
+        XCTAssertEqual(view.messages, [
+            .display(errorMessage: .none),
+            .display(isLoading: true)
+        ])
     }
     
     
@@ -56,7 +74,7 @@ final class ProductsPresenterTests: XCTestCase {
     private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductsPresenter, view: ViewSpy) {
         
         let view = ViewSpy()
-        let sut = ProductsPresenter(errorView: view)
+        let sut = ProductsPresenter(loadingView: view, errorView: view)
         trackForMemoryLeak(sut, file: file, line: line)
         trackForMemoryLeak(view, file: file, line: line)
         
@@ -64,10 +82,11 @@ final class ProductsPresenterTests: XCTestCase {
     }
     
     
-    private class ViewSpy: ProductsErrorView {
+    private class ViewSpy: ProductsErrorView, ProductsLoadingView{
         
         enum Message: Equatable {
             case display(errorMessage: String?)
+            case display(isLoading: Bool)
         }
         
         private(set) var messages = [Message]()
@@ -75,6 +94,10 @@ final class ProductsPresenterTests: XCTestCase {
         
         func display(_ viewModel: ProductsErrorViewModel) {
             messages.append(.display(errorMessage: viewModel.message))
+        }
+        
+        func display(_ viewModel: ProductsLoadingViewModel) {
+            messages.append(.display(isLoading: viewModel.isLoading))
         }
     }
 }
