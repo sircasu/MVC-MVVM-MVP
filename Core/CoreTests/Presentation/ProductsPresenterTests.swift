@@ -8,7 +8,7 @@
 import XCTest
 import Core
 
-
+/// Just for exercise add tests
 final class ProductsPresenterTests: XCTestCase {
     
     func test_title_isLocalized() {

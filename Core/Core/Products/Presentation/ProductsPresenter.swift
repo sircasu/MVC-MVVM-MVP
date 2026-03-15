@@ -7,6 +7,8 @@
 
 import Foundation
 
+/// Just for exercise
+
 public protocol ProductsView {
     func display(_ viewModel: ProductsViewModel)
 }
