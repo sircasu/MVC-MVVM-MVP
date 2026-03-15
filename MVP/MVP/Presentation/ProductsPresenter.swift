@@ -11,6 +11,14 @@ import Core
 
 struct ProductsErrorViewModel {
     let message: String?
+    
+    static var noError: ProductsErrorViewModel {
+        ProductsErrorViewModel(message: nil)
+    }
+    
+    static func error(message: String) -> ProductsErrorViewModel {
+        ProductsErrorViewModel(message: message)
+    }
 }
 
 protocol ProductsErrorView {
@@ -54,7 +62,7 @@ final public class ProductsPresenter {
     
     func didStartLoading() {
         loadingView.display(ProductsLoadingViewModel(isLoading: true))
-        errorView.display(ProductsErrorViewModel(message: nil))
+        errorView.display(.noError)
     }
     
     func didLoadProdcutsWith(products: [ProductItem]) {
@@ -64,7 +72,7 @@ final public class ProductsPresenter {
     
     func didLoadProdcutsWith(error: Error) {
         loadingView.display(ProductsLoadingViewModel(isLoading: false))
-        errorView.display(ProductsErrorViewModel(message: productsLoadError))
+        errorView.display(.error(message: productsLoadError))
     }
 
 }
