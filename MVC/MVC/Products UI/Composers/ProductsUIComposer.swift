@@ -22,8 +22,15 @@ public final class ProductsUIComposer {
         let vc = ProductsViewController(refreshController: refreshController)
         vc.title = NSLocalizedString("PRODUCTS_VIEW_TITLE", tableName: "Products", bundle: Bundle(for: ProductsViewController.self), comment: "Title for the product view")
         
+        refreshController.onLoadingStart = { [weak vc] in
+            vc?.errorView.message = nil
+        }
+        
         refreshController.onRefresh = adaptProductToCellController(forwardingTo: vc, with: MainQueueDispatchDecorator(decoratee: imageLoader))
         
+        refreshController.onError = { [weak vc] _ in
+            vc?.errorView.message = NSLocalizedString("PRODUCTS_VIEW_CONNECTION_ERROR", tableName: "Products", bundle: Bundle(for: ProductsViewController.self), comment: "Error message for view")
+        }
         
         return vc
     }

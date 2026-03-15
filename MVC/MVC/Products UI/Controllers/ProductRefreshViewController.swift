@@ -18,20 +18,24 @@ public final class ProductRefreshViewController: NSObject {
     
     private let productsLoader: ProductsLoader
     
+    var onLoadingStart: (() -> Void)?
     var onRefresh: (([ProductItem]) -> Void)?
+    var onError: ((Error) -> Void)?
     
     public init(productsLoader: ProductsLoader) {
         self.productsLoader = productsLoader
     }
     
     @objc func refresh() {
+        onLoadingStart?()
         view.beginRefreshing()
         productsLoader.getProducts { [weak self] result in
             
             switch result {
             case let .success(products):
                 self?.onRefresh?(products)
-            default: break
+            case let .failure(error):
+                self?.onError?(error)
             }
             self?.view.endRefreshing()
         }
