@@ -140,12 +140,9 @@ class ProductsViewControllerTests: XCTestCase {
         sut.simulateAppearance()
         
         loader.completesProductsLoadingWithError()
-        
-
         XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
         
         sut.simulateUserInitiatedReload()
-
         XCTAssertNil(sut.errorMessage)
     }
     

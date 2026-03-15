@@ -22,8 +22,16 @@ public final class ProductsUIComposer {
         let vc = ProductsViewController(refreshController: refreshController)
         vc.title = ProductsViewModel.title
         
+        
+        productRefreshViewModel.onLoadingStart = { [weak vc] in
+            vc?.errorView.message = nil
+        }
+        
         productRefreshViewModel.onRefresh = adaptProductToCellController(forwardingTo: vc, with: MainQueueDispatchDecorator(decoratee: imageLoader))
         
+        productRefreshViewModel.onError = { [weak vc] _ in
+            vc?.errorView.message = ProductsViewModel.error
+        }
         
         return vc
     }
@@ -31,8 +39,9 @@ public final class ProductsUIComposer {
     
     private static func adaptProductToCellController(forwardingTo controller: ProductsViewController, with imageLoader: ProductImageLoader) -> ([ProductItem]) -> Void {
         
-         { [weak controller] items in
-             
+        
+        { [weak controller] items in
+            
             controller?.tableModel = items.map { ProductCellController(
                 viewModel: ProductCellControllerViewModel(
                     model: $0,

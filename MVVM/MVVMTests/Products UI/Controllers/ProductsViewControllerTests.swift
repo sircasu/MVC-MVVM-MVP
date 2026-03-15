@@ -133,6 +133,17 @@ class ProductsViewControllerTests: XCTestCase {
     }
     
     
+    func test_loadProductsCompletion_showErrorOnLoadErrorUntilNextReload() {
+        let (sut, loader) = makeSUT()
+        sut.simulateAppearance()
+        
+        loader.completesProductsLoadingWithError()
+        XCTAssertEqual(sut.errorMessage, localized("PRODUCTS_VIEW_CONNECTION_ERROR"))
+        
+        sut.simulateUserInitiatedReload()
+        XCTAssertNil(sut.errorMessage)
+    }
+    
     
     func test_productView_loadsImageURLWhenVisible() {
         

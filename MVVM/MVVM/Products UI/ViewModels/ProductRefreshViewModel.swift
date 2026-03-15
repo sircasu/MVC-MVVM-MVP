@@ -19,9 +19,12 @@ final public class ProductRefreshViewModel {
         self.productsLoader = productsLoader
     }
     
+    var onLoadingStart: (() -> Void)?
     var onRefresh: (([ProductItem]) -> Void)?
+    var onError: ((Error) -> Void)?
     
     func loadProducts() {
+        onLoadingStart?()
         onLoadingStateChange?(true)
         
         productsLoader.getProducts { [weak self] result in
@@ -29,7 +32,8 @@ final public class ProductRefreshViewModel {
             switch result {
             case let .success(products):
                 self?.onRefresh?(products)
-            default: break
+            case let .failure(error):
+                self?.onError?(error)
             }
             self?.onLoadingStateChange?(false)
         }
