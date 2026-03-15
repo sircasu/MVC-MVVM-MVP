@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import Core
 
 struct ProductsErrorViewModel {
     let message: String?
@@ -44,6 +45,10 @@ class ProductsPresenter {
         errorView.display(.noError)
         loadingView.display(ProductsLoadingViewModel(isLoading: true))
     }
+    
+    func didLoadProductsWith(products: [ProductItem]) {
+        loadingView.display(ProductsLoadingViewModel(isLoading: false))
+    }
 }
 
 final class ProductsPresenterTests: XCTestCase {
@@ -66,6 +71,16 @@ final class ProductsPresenterTests: XCTestCase {
             .display(errorMessage: .none),
             .display(isLoading: true)
         ])
+    }
+    
+    
+    func test_didLoadProductWithProducts_displayIsLoadingFalseMessage() {
+        
+        let (sut, view) = makeSUT()
+        
+        sut.didLoadProductsWith(products: [])
+        
+        XCTAssertEqual(view.messages, [.display(isLoading: false)])
     }
     
     
