@@ -7,7 +7,23 @@
 
 import UIKit
 
+
+extension UITableView {
+    func updateHeaderViewFrame() {
+        guard let headerView = self.tableHeaderView else { return }
+        
+        // Update the size of the header based on its internal content.
+        headerView.layoutIfNeeded()
+        
+        // Trigger table view to know that header should be updated.
+        let header = self.tableHeaderView
+        self.tableHeaderView = header
+    }
+}
+
 public final class ProductsViewController: UITableViewController, UITableViewDataSourcePrefetching {
+    
+    public var errorView = ErrorView()
     
     public var refreshController: ProductRefreshViewController?
     
@@ -29,6 +45,16 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     public override func viewDidLoad() {
         super.viewDidLoad()
+        
+        errorView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.tableHeaderView = errorView
+
+        tableView.tableHeaderView!.centerXAnchor.constraint(equalTo: tableView.centerXAnchor).isActive = true
+        tableView.tableHeaderView!.widthAnchor.constraint(equalTo: tableView.widthAnchor).isActive = true
+        tableView.tableHeaderView!.topAnchor.constraint(equalTo: tableView.topAnchor).isActive = true
+        tableView.updateHeaderViewFrame()
+        
+        
         
         tableView.register(ProductCell.self, forCellReuseIdentifier: String(describing: ProductCell.self))
 
