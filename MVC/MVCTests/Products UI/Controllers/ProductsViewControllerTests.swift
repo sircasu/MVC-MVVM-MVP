@@ -123,6 +123,14 @@ class ProductsViewControllerTests: XCTestCase {
         assertThat(sut, isRendering: [product0, product1])
     }
     
+    func test_errorView_doesNotRenderOnLoad() {
+        let (sut, _) = makeSUT()
+        
+        sut.simulateAppearance()
+        
+        XCTAssertEqual(sut.errorMessage, nil)
+    }
+    
     
     func test_productView_loadsImageURLWhenVisible() {
         

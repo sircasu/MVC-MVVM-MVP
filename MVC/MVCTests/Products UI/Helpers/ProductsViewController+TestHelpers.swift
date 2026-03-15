@@ -40,6 +40,11 @@ extension ProductsViewController {
     }
     
     
+    var errorMessage: String? {
+        errorView.message
+    }
+    
+    
     var isShowingLoadingIndicator: Bool { refreshControl?.isRefreshing == true }
     
     var productSection: Int { 0 }
