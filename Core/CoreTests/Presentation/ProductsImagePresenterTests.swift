@@ -65,7 +65,16 @@ final class ProductImagePresenter<View: ProductImageView, Image> where View.Imag
             shouldRetry: image == nil))
     }
     
-
+    
+    func didFinishLoadingData(with error: Error, for model: ProductItem) {
+        productImageView.display(ProductImageViewModel(
+            title: model.title,
+            description: model.description,
+            price: model.price.toString,
+            image: nil,
+            isLoading: false,
+            shouldRetry: true))
+    }
 }
 
 public final class ProductsImagePresenterTests: XCTestCase {
@@ -130,6 +139,23 @@ public final class ProductsImagePresenterTests: XCTestCase {
         XCTAssertEqual(message?.shouldRetry, false)
         XCTAssertEqual(message?.image, transformedData)
     }
+    
+    
+    func test_didFinishLoadingDataWithError_displaysRetry() {
+        let productModel = makeItem().model
+        let (sut, view) = makeSUT()
+        
+        sut.didFinishLoadingData(with: anyNSError(), for: productModel)
+        
+        let message = view.messages.first
+        XCTAssertEqual(view.messages.count, 1)
+        XCTAssertEqual(message?.description, productModel.description)
+        XCTAssertEqual(message?.isLoading, false)
+        XCTAssertEqual(message?.shouldRetry, true)
+        XCTAssertNil(message?.image)
+    }
+    
+    
     
     // MARK: - Helpers
     
