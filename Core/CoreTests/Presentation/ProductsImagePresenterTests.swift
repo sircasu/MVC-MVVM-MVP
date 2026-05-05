@@ -30,9 +30,11 @@ public protocol ProductImageView {
 class ProductImagePresenter {
     
     private let productImageView: ProductImageView
+    private let imageTransformer: (Data) -> Any?
     
-    init(productImageView: ProductImageView) {
+    init(productImageView: ProductImageView, imageTransformer: @escaping (Data) -> Any?) {
         self.productImageView = productImageView
+        self.imageTransformer = imageTransformer
     }
     
     func didStartLoading(for model: ProductItem) {
@@ -46,6 +48,23 @@ class ProductImagePresenter {
                 shouldRetry: false)
         )
     }
+    
+    
+    private struct InvalidImageDataError: Error {}
+    
+    
+    func didFinishLoadingData(with data: Data, for model: ProductItem) {
+
+        productImageView.display(ProductImageViewModel(
+            title: model.title,
+            description: model.description,
+            price: model.price.toString,
+            image: imageTransformer(data),
+            isLoading: false,
+            shouldRetry: true))
+    }
+    
+
 }
 
 public final class ProductsImagePresenterTests: XCTestCase {
@@ -53,7 +72,7 @@ public final class ProductsImagePresenterTests: XCTestCase {
     
     func test_init_doesNotSendMessagesToView() {
         
-        let (_, view) = makeSUT()
+        let (_, view) = makeSUT(imageTransformer: { _ in })
         
         XCTAssertTrue(view.messages.isEmpty)
     }
@@ -61,7 +80,7 @@ public final class ProductsImagePresenterTests: XCTestCase {
     
     func test_didStartLoading_displayLoadingImage() {
         
-        let (sut, view) = makeSUT()
+        let (sut, view) = makeSUT(imageTransformer: { _ in })
         let productModel = makeItem().model
         
         sut.didStartLoading(for: productModel)
@@ -75,12 +94,29 @@ public final class ProductsImagePresenterTests: XCTestCase {
         XCTAssertEqual(view.messages.first?.shouldRetry, false)
     }
     
+    
+    func test_didFinishLoadingData_displayRetryOnFailedImageTransformation() {
+        let (sut, view) = makeSUT(imageTransformer: { _ in nil })
+        let productModel = makeItem().model
+        
+        sut.didFinishLoadingData(with: anyData(), for: productModel)
+            
+        let message = view.messages.first
+
+        XCTAssertEqual(message?.title, productModel.title)
+        XCTAssertEqual(message?.description, productModel.description)
+        XCTAssertEqual(message?.price, "\(productModel.price)")
+        XCTAssertNil(message?.image)
+        XCTAssertEqual(message?.isLoading, false)
+        XCTAssertEqual(message?.shouldRetry, true)
+    }
+    
     // MARK: - Helpers
     
-    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductImagePresenter, view: ViewSpy) {
+    private func makeSUT(imageTransformer: @escaping (Data) -> Any?, file: StaticString = #filePath, line: UInt = #line) -> (sut: ProductImagePresenter, view: ViewSpy) {
         
         let view = ViewSpy()
-        let sut = ProductImagePresenter(productImageView: view)
+        let sut = ProductImagePresenter(productImageView: view, imageTransformer: imageTransformer)
         
         trackForMemoryLeak(view, file: file, line: line)
         trackForMemoryLeak(sut, file: file, line: line)
