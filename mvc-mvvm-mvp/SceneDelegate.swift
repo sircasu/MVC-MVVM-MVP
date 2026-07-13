@@ -54,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             imageLoader: imageLoader
         )
         let mvcNC = UINavigationController(rootViewController: mvcVC)
-        mvcNC.tabBarItem = UITabBarItem(title: "MVC", image: nil, tag: 1)
+        mvcNC.tabBarItem = UITabBarItem(title: "MVC", image: nil, tag: 2)
         
         
         let tb = UITabBarController()
