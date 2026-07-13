@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Core
 import MVC
 import MVVM
 import MVP
@@ -21,7 +22,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        let vc = MVP.TestVC()
+        let url = URL(string: "https://fakestoreapi.com/products")!
+        
+        let session = URLSession(configuration: .ephemeral)
+        let client = URLSessionHTTPClient(session: session)
+        
+        let productsLoader = RemoteProductsLoader(url: url, client: client)
+        let imageLoader = RemoteProductImageDataLoader(client: client)
+        let vc = MVP.ProductsUIComposer.makeProductsUI(
+            productsLoader: productsLoader,
+            imageLoader: imageLoader
+        )
         
         
         window?.rootViewController = vc
