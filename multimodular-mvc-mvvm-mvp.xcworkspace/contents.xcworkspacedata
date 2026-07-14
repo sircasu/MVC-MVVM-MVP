@@ -28,4 +28,7 @@
    <FileRef
       location = "group:MVPTests.xctestplan">
    </FileRef>
+   <FileRef
+      location = "group:../swift-uikit/MVC-MVVM-MVP/AppAcceptanceTests.xctestplan">
+   </FileRef>
 </Workspace>

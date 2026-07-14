@@ -52,6 +52,17 @@
                ReferencedContainer = "container:mvc-mvvm-mvp.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8514798F3006A229005507C1"
+               BuildableName = "AppAcceptanceTests.xctest"
+               BlueprintName = "AppAcceptanceTests"
+               ReferencedContainer = "container:mvc-mvvm-mvp.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
