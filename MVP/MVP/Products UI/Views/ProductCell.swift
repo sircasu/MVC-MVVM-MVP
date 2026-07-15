@@ -31,6 +31,7 @@ public final class ProductCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
+        accessibilityIdentifier = String(describing: Self.self)
         setupViews()
     }
     
@@ -50,6 +51,7 @@ public final class ProductCell: UITableViewCell {
         productDescription.numberOfLines = 3
 
         productImageView.translatesAutoresizingMaskIntoConstraints = false
+        productImageView.accessibilityIdentifier = "product-image-view"
         productImageContainer.translatesAutoresizingMaskIntoConstraints = false
         retryButton.translatesAutoresizingMaskIntoConstraints = false
         productImageContainer.addSubview(productImageView)

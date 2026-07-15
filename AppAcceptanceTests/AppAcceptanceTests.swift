@@ -6,7 +6,7 @@
 //
 
 import XCTest
-
+import MVP
 final class AppAcceptanceTests: XCTestCase {
 
     func test_onLaunch_displaysRemoteProductsWhenCustomerHasConnectivity() {
@@ -14,6 +14,10 @@ final class AppAcceptanceTests: XCTestCase {
         
         app.launch()
         
-        XCTAssertTrue(app.cells.count > 0)
+        let productCells = app.cells.matching(identifier: String(describing: ProductCell.self))
+        XCTAssertTrue(productCells.count > 0)
+        
+        let firstImage = app.images.matching(identifier: "product-image-view").firstMatch
+        XCTAssert(firstImage.exists)
     }
 }
