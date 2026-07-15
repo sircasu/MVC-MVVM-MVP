@@ -65,6 +65,26 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        
 //        
 //        window?.makeKeyAndVisible()
+        
+        window = UIWindow(windowScene: windowScene)
+        
+        let url = URL(string: "https://fakestoreapi.com/products")!
+        
+        let session = URLSession(configuration: .ephemeral)
+        let client = URLSessionHTTPClient(session: session)
+        
+        let productsLoader = RemoteProductsLoader(url: url, client: client)
+        let imageLoader = RemoteProductImageDataLoader(client: client)
+        
+        // MVP
+        let mvpVC = MVP.ProductsUIComposer.makeProductsUI(
+            productsLoader: productsLoader,
+            imageLoader: imageLoader
+        )
+        window?.rootViewController = mvpVC
+
+
+        window?.makeKeyAndVisible()
     }
 
 
