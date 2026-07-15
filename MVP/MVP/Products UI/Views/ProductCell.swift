@@ -73,7 +73,6 @@ public final class ProductCell: UITableViewCell {
             externalHStack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
             productImageContainer.widthAnchor.constraint(equalToConstant: 100),
-            productImageContainer.heightAnchor.constraint(equalTo: productImageContainer.widthAnchor),
             productImageView.heightAnchor.constraint(equalToConstant: 100),
             productImageView.widthAnchor.constraint(equalToConstant: 100),
 
