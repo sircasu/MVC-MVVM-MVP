@@ -20,4 +20,14 @@ final class AppAcceptanceTests: XCTestCase {
         let firstImage = app.images.matching(identifier: "product-image-view").firstMatch
         XCTAssert(firstImage.exists)
     }
+    
+    
+    func test_onLaunch_displaysEmpryProductsWhenUserHasNoConnectivity() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-connectivity", "offline"]
+        app.launch()
+        
+        let productCells = app.cells.matching(identifier: String(describing: ProductCell.self))
+        XCTAssertEqual(productCells.count, 0)
+    }
 }

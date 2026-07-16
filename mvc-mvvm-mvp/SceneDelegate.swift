@@ -70,8 +70,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let url = URL(string: "https://fakestoreapi.com/products")!
         
-        let session = URLSession(configuration: .ephemeral)
-        let client = URLSessionHTTPClient(session: session)
+        let client = makeRemoteClient()
         
         let productsLoader = RemoteProductsLoader(url: url, client: client)
         let imageLoader = RemoteProductImageDataLoader(client: client)
@@ -88,7 +87,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
+    func makeRemoteClient() -> HTTPClient {
 
+        return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+    }
 
 }
+
+
 

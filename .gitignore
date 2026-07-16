@@ -1,0 +1,20 @@
+# Xcode user-specific
+*.xcuserstate
+xcuserdata/
+
+# Build artifacts
+build/
+DerivedData/
+*.o
+*.d
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# CocoaPods (if ever added)
+Pods/
+Podfile.lock
+
+# macOS
+.DS_Store
