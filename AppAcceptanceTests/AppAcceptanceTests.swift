@@ -11,11 +11,11 @@ final class AppAcceptanceTests: XCTestCase {
 
     func test_onLaunch_displaysRemoteProductsWhenCustomerHasConnectivity() {
         let app = XCUIApplication()
-        
+        app.launchArguments = ["-connectivity", "online"]
         app.launch()
         
         let productCells = app.cells.matching(identifier: String(describing: ProductCell.self))
-        XCTAssertTrue(productCells.count > 0)
+        XCTAssertEqual(productCells.count, 2)
         
         let firstImage = app.images.matching(identifier: "product-image-view").firstMatch
         XCTAssert(firstImage.exists)
