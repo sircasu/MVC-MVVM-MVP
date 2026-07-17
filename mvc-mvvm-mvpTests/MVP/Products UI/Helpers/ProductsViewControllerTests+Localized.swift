@@ -8,11 +8,12 @@
 import Foundation
 import XCTest
 import MVP
+import Core
 
 extension ProductsViewControllerTests {
     func localized(_ key: String, file: StaticString = #filePath, line: UInt = #line) -> String {
         let table = "Products"
-        let bundle = Bundle(for: ProductsViewController.self)
+        let bundle = Bundle(for: ProductsPresenter.self)
         let value = bundle.localizedString(forKey: key, value: nil, table: table)
         if key == value {
             XCTFail("Missing localized string for key: \(key) in table: \(table)", file: file, line: line)

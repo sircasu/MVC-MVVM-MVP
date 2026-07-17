@@ -7,7 +7,9 @@
 
 
 import XCTest
+import Core
 import MVP
+
 final class ProductsLocalizationsTests: XCTestCase {
     
     func test_localizedString_haveKeysAndValuesForAllSupportedLanguages() {

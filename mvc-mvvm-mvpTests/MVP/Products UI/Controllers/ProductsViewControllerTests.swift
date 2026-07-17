@@ -9,6 +9,7 @@ import XCTest
 import UIKit
 import Core
 import MVP
+import mvc_mvvm_mvp
 
 class ProductsViewControllerTests: XCTestCase {
     

@@ -32,7 +32,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     private var onViewIsAppearing: ((ProductsViewController) -> Void)?
     
     
-    public var tableModel = [CellController]() {
+    private var tableModel = [CellController]() {
         didSet {
             tableView.reloadData()
         }
@@ -95,6 +95,9 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     
     
+    public func display(_ viewModel: [CellController]) {
+        tableModel = viewModel
+    }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         tableModel.count

@@ -24,7 +24,7 @@ public class ProductsViewAdapter: ProductsView {
     public func display(_ viewModel: ProductsViewModel) {
         
 
-        controller?.tableModel = viewModel.products.map { model in
+        controller?.display(viewModel.products.map { model in
             let adapter = ProductImageDataLoaderPresentationAdapter<WeakRefVirtualProxy<ProductCellController>, UIImage>(
                 model: model,
                 imageLoader: imageLoader
@@ -38,7 +38,7 @@ public class ProductsViewAdapter: ProductsView {
             
             return view
 
-        }
+        })
 
     }
 
