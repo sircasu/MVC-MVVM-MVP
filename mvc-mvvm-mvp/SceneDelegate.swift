@@ -11,15 +11,31 @@ import MVC
 import MVVM
 import MVP
 
+public protocol WindowProtocol: AnyObject {
+    var rootViewController: UIViewController? { get set }
+    func makeKeyAndVisible()
+}
+
+extension UIWindow: WindowProtocol {}
+
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-
+        
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        let window = UIWindow(windowScene: windowScene)
+                
+        configureWindow(window: window)
+        
+        self.window = window
+    }
+    
+    
+    func configureWindow(window: WindowProtocol) {
+ 
 //        window = UIWindow(windowScene: windowScene)
 //        
 //        let url = URL(string: "https://fakestoreapi.com/products")!
@@ -65,8 +81,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        
 //        
 //        window?.makeKeyAndVisible()
-        
-        window = UIWindow(windowScene: windowScene)
+
         
         let url = URL(string: "https://fakestoreapi.com/products")!
         
@@ -80,10 +95,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             productsLoader: productsLoader,
             imageLoader: imageLoader
         )
-        window?.rootViewController = mvpVC
+        
+        let tb = UITabBarController()
+        let mvpNC = UINavigationController(rootViewController: mvpVC)
+        mvpNC.tabBarItem = UITabBarItem(title: "MVP", image: nil, tag: 0)
+        
+        tb.viewControllers = [mvpNC]
+        
+        window.rootViewController = tb
 
 
-        window?.makeKeyAndVisible()
+        window.makeKeyAndVisible()
     }
 
 

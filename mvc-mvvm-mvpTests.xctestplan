@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "3128CE46-79FB-4942-97C9-2139A04AC08B",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:mvc-mvvm-mvp.xcodeproj",
+        "identifier" : "85749CC52EE5878A001AF00E",
+        "name" : "mvc-mvvm-mvpTests"
+      }
+    }
+  ],
+  "version" : 1
+}
