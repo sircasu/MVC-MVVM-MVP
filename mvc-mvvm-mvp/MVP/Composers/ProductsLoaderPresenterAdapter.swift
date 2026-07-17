@@ -7,6 +7,7 @@
 
 import Foundation
 import Core
+import MVP
 
 public class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelegate {
     

@@ -39,7 +39,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     }
     
     
-    convenience init(refreshController: ProductRefreshViewController) {
+    public convenience init(refreshController: ProductRefreshViewController) {
         self.init()
         self.refreshController = refreshController
     }

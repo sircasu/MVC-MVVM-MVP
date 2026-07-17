@@ -7,6 +7,7 @@
 
 import UIKit
 import Core
+import MVP
 
 public final class ProductsUIComposer {
     

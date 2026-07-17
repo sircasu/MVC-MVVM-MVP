@@ -7,6 +7,7 @@
 
 import Foundation
 import Core
+import MVP
 
 public final class ProductImageDataLoaderPresentationAdapter<View: ProductImageView, Image>: ProductCellControllerDelegate where View.Image == Image {
     

@@ -91,7 +91,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let imageLoader = RemoteProductImageDataLoader(client: client)
         
         // MVP
-        let mvpVC = MVP.ProductsUIComposer.makeProductsUI(
+        let mvpVC = ProductsUIComposer.makeProductsUI(
             productsLoader: productsLoader,
             imageLoader: imageLoader
         )
