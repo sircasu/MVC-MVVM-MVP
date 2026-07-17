@@ -20,7 +20,7 @@ public class ProductsViewAdapter: ProductsView {
     }
     
 
-    func display(_ viewModel: ProductsViewModel) {
+    public func display(_ viewModel: ProductsViewModel) {
         
 
         controller?.tableModel = viewModel.products.map { model in

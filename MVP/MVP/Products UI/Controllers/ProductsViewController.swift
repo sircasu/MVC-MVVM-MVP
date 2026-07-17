@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import Core
 
 extension UITableView {
     func updateHeaderViewFrame() {
@@ -76,7 +76,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     
     
     
-    func display(_ viewModel: ProductsLoadingViewModel) {
+    public func display(_ viewModel: ProductsLoadingViewModel) {
         if viewModel.isLoading {
             refreshControl?.beginRefreshing()
         } else {
@@ -85,7 +85,7 @@ public final class ProductsViewController: UITableViewController, UITableViewDat
     }
     
     
-    func display(_ viewModel: ProductsErrorViewModel) {
+    public func display(_ viewModel: ProductsErrorViewModel) {
         errorView.message = viewModel.message
         tableView.tableHeaderView?.isHidden = viewModel.message == nil
 

@@ -29,9 +29,9 @@ public class ProductsLoaderPresenterAdapter: ProductRefreshViewControllerDelegat
             
             switch result {
             case let .success(products):
-                presenter?.didLoadProdcutsWith(products: products)
+                presenter?.didLoadProductsWith(products: products)
             case let .failure(error):
-                presenter?.didLoadProdcutsWith(error: error)
+                presenter?.didLoadProductsWith(error: error)
             }
         }
     }

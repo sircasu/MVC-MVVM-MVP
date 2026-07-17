@@ -23,7 +23,7 @@ public final class ProductImageDataLoaderPresentationAdapter<View: ProductImageV
     
     public func didRequestImage() {
 
-        presenter?.didStartLoadingProduct(for: model)
+        presenter?.didStartLoading(for: model)
 
         task = imageLoader.loadImageData(from: model.image) { [weak self] result in
             
