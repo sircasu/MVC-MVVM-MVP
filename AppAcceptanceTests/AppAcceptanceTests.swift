@@ -22,7 +22,7 @@ final class AppAcceptanceTests: XCTestCase {
     }
     
     
-    func test_onLaunch_displaysEmpryProductsWhenUserHasNoConnectivity() {
+    func test_onLaunch_displaysEmptyProductsWhenUserHasNoConnectivity() {
         let app = XCUIApplication()
         app.launchArguments = ["-connectivity", "offline"]
         app.launch()

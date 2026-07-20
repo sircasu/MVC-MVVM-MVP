@@ -23,8 +23,13 @@ class ProductsAcceptanceTests: XCTestCase {
     }
     
     
-    func test_onLaunch_displaysEmpryProductsWhenUserHasNoConnectivity() {
+    func test_onLaunch_displaysEmptyProductsWhenUserHasNoConnectivity() {
 
+        let sut = launch(httpClient: .offline)
+        
+        sut.simulateAppearance()
+        
+        XCTAssertEqual(sut.numberOfRenderedProductViews, 0)
     }
     
     
