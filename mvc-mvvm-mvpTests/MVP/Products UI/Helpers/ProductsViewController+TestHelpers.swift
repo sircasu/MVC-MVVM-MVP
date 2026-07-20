@@ -42,6 +42,10 @@ extension ProductsViewController {
     }
     
     
+    func renderedProductImageData(at index: Int) -> Data? {
+        return simulateProductImageBeginVisible(at: index)?.renderedImage
+    }
+    
     
     var errorMessage: String? {
         errorView.message

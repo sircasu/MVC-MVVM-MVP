@@ -22,6 +22,17 @@ extension UIWindow: WindowProtocol {}
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    
+    private lazy var httpClient: HTTPClient = {
+        URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+    }()
+    
+    convenience init(httpClient: HTTPClient) {
+        self.init()
+        self.httpClient = httpClient
+    }
+    
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -85,10 +96,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let url = URL(string: "https://fakestoreapi.com/products")!
         
-        let client = makeRemoteClient()
-        
-        let productsLoader = RemoteProductsLoader(url: url, client: client)
-        let imageLoader = RemoteProductImageDataLoader(client: client)
+
+        let remoteClient = makeRemoteClient()
+        let productsLoader = RemoteProductsLoader(url: url, client: remoteClient)
+        let imageLoader = RemoteProductImageDataLoader(client: remoteClient)
         
         // MVP
         let mvpVC = ProductsUIComposer.makeProductsUI(
@@ -111,7 +122,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func makeRemoteClient() -> HTTPClient {
 
-        return URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+        return httpClient
     }
 
 }
