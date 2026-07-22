@@ -60,6 +60,9 @@ extension ProductsViewController {
     }
     
     func productView(at row: Int) -> UITableViewCell? {
+        guard numberOfRenderedProductViews > row else {
+            return nil
+        }
         let ds = tableView.dataSource
         let indexPath = IndexPath(row: row, section: productSection)
         return ds?.tableView(tableView, cellForRowAt: indexPath)
