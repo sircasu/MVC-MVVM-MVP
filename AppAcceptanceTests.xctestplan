@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "DF2924B3-63E3-4F9F-880F-F8D3F0726E96",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:mvc-mvvm-mvp.xcodeproj",
+        "identifier" : "8514798F3006A229005507C1",
+        "name" : "AppAcceptanceTests"
+      }
+    }
+  ],
+  "version" : 1
+}
